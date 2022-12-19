@@ -4,6 +4,9 @@ import java.util.Properties;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
+import at.ac.csdc23vz_02.common.BankServer;
+import net.froihofer.dsfinance.bank.client.utils.UserInterface;
 import net.froihofer.util.AuthCallbackHandler;
 import net.froihofer.util.WildflyJndiLookupHelper;
 import org.slf4j.Logger;
@@ -15,6 +18,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BankClient {
   private static Logger log = LoggerFactory.getLogger(BankClient.class);
+  private static BankServer bankServer;
 
   /**
    * Skeleton method for performing an RMI lookup
@@ -27,8 +31,7 @@ public class BankClient {
     props.put(Context.SECURITY_CREDENTIALS,AuthCallbackHandler.getPassword());
     try {
       WildflyJndiLookupHelper jndiHelper = new WildflyJndiLookupHelper(new InitialContext(props), "ds-finance-bank-ear", "ds-finance-bank-ejb", "");
-      //TODO: Lookup the proxy and assign it to some variable or return it by changing the
-      //      return type of this method
+      bankServer = jndiHelper.lookup("BankServer", BankServer.class);
     }
     catch (NamingException e) {
       log.error("Failed to initialize InitialContext.",e);
@@ -37,10 +40,13 @@ public class BankClient {
 
   private void run() {
     //TODO implement the client part
+    UserInterface userInterface = new UserInterface(bankServer);
+    userInterface.init();
   }
 
   public static void main(String[] args) {
     BankClient client = new BankClient();
+    client.getRmiProxy();
     client.run();
   }
 }
