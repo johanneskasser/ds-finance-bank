@@ -4,7 +4,6 @@ import at.ac.csdc23vz_02.common.BankServer;
 import at.ac.csdc23vz_02.common.Customer;
 import at.ac.csdc23vz_02.common.exceptions.BankServerException;
 
-import javax.crypto.spec.PSource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +11,7 @@ import java.util.Scanner;
 
 public class UserInterface {
 
-    private BankServer bankServer;
+    private final BankServer bankServer;
     private final Scanner in = new Scanner(System.in);
 
     public UserInterface(BankServer bankServer) {
@@ -21,7 +20,7 @@ public class UserInterface {
 
     public void init(){
         System.out.println("\n====== WELCOME ======");
-        System.out.println("Login or Register?");
+        setModuleHeadline("Login or Register");
         int output = showMenu(Arrays.asList("Login", "Register"));
         if(output == 1) {
             startLoginProcess();
@@ -32,7 +31,7 @@ public class UserInterface {
 
     private void startRegisterProcess() {
         Customer customer = new Customer();
-        System.out.println("\nRegistering new Client:\n");
+        setModuleHeadline("Registering new Client");
         customer.setFirstName(showInputElement("First Name"));
         customer.setLastName(showInputElement("Last Name"));
         String pwFirst = showInputElement("Password");
@@ -56,6 +55,7 @@ public class UserInterface {
 
     private void startLoginProcess(){
         //TODO
+        setModuleHeadline("Login");
         System.err.println("Not Implemented yet");
     }
 
@@ -96,5 +96,9 @@ public class UserInterface {
 
     private boolean checkInput(int size, int input) {
         return input < size && input > 0;
+    }
+
+    private void setModuleHeadline(String headline) {
+        System.out.println("\n" + headline + ":\n");
     }
 }
