@@ -4,6 +4,7 @@ import at.ac.csdc23vz_02.common.BankServer;
 import at.ac.csdc23vz_02.common.Customer;
 import at.ac.csdc23vz_02.common.exceptions.BankServerException;
 
+import javax.crypto.spec.PSource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -31,20 +32,25 @@ public class UserInterface {
 
     private void startRegisterProcess() {
         Customer customer = new Customer();
-        System.out.println("Registering new Client:\n");
+        System.out.println("\nRegistering new Client:\n");
         customer.setFirstName(showInputElement("First Name"));
         customer.setLastName(showInputElement("Last Name"));
         String pwFirst = showInputElement("Password");
-        String pwSecond = showInputElement("Repeat Password: ");
-        if(pwFirst.equals(pwSecond)){
-            customer.setPassword(pwFirst);
-            try{
-                bankServer.createCustomer(customer);
-                System.out.println("User Created.");
-            } catch (BankServerException e) {
-                System.err.println("Something went wrong while trying to create Customer. Please see Stack Trace.");
-                e.printStackTrace();
-            }
+        String pwSecond = showInputElement("Repeat Password");
+        while(!pwFirst.equals(pwSecond)) {
+            System.out.println("\nPasswords do not match!\n");
+            pwFirst = showInputElement("Password");
+            pwSecond = showInputElement("Repeat Password");
+        }
+        customer.setPassword(pwFirst);
+
+        try {
+            bankServer.createCustomer(customer);
+            System.out.println("User Created.");
+            startLoginProcess();
+        } catch (BankServerException e) {
+            System.err.println("Something went wrong while trying to create Customer. Please see Stack Trace.");
+            e.printStackTrace();
         }
     }
 
