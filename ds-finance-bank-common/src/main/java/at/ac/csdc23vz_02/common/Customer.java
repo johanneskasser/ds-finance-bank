@@ -10,7 +10,7 @@ public class Customer extends Person implements Serializable {
         super();
     }
 
-    public Customer(String firstName, String lastName, String password) {
-        super(firstName, lastName, password);
+    public Customer(String firstName, String lastName, String userName, String password) {
+        super(firstName, lastName, userName, password);
     }
 }

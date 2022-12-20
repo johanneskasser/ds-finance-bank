@@ -12,5 +12,5 @@ import javax.ejb.Remote;
 @Remote
 public interface BankServer {
 
-    String createCustomer(Customer customer) throws BankServerException;
+    void createCustomer(Customer customer) throws BankServerException;
 }

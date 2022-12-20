@@ -34,6 +34,7 @@ public class UserInterface {
         setModuleHeadline("Registering new Client");
         customer.setFirstName(showInputElement("First Name"));
         customer.setLastName(showInputElement("Last Name"));
+        customer.setUserName(showInputElement("Username"));
         String pwFirst = showInputElement("Password");
         String pwSecond = showInputElement("Repeat Password");
         while(!pwFirst.equals(pwSecond)) {
@@ -44,7 +45,7 @@ public class UserInterface {
         customer.setPassword(pwFirst);
 
         try {
-            System.out.println(bankServer.createCustomer(customer));
+            bankServer.createCustomer(customer);
             System.out.println("User Created.");
             startLoginProcess();
         } catch (BankServerException e) {

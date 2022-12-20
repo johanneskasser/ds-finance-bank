@@ -8,12 +8,14 @@ public abstract class Person implements Serializable {
 
 
     private Integer id;
+    private String userName;
     private String firstName;
     private String lastName;
     private String password;
 
-    public Person(String firstName, String lastName, String password) {
+    public Person(String firstName, String lastName, String userName, String password) {
         this.firstName = firstName;
+        this.userName = userName;
         this.lastName = lastName;
         this.password = password;
     }
@@ -51,6 +53,14 @@ public abstract class Person implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getFullName() {
