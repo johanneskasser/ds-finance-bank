@@ -55,9 +55,22 @@ public class UserInterface {
     }
 
     private void startLoginProcess(){
+        Customer customer = new Customer();
         //TODO
         setModuleHeadline("Login");
-        System.err.println("Not Implemented yet");
+        customer.setUserName(showInputElement("Username"));
+        customer.setPassword(showInputElement("Password"));
+        try {
+            if(bankServer.login(customer)) {
+                System.out.println("Successful Login!");
+                //TODO: Go To Main Menu corresponding to the employee/customer
+            } else {
+                System.out.println("Wrong Password or Username!");
+            }
+        } catch (BankServerException bankServerException){
+            System.out.println("Something went wrong.");
+            bankServerException.printStackTrace();
+        }
     }
 
     private Integer showMenu(List<String> menuChoices) {
