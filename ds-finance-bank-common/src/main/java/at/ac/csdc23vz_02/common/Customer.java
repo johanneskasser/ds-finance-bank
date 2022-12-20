@@ -1,6 +1,8 @@
 package at.ac.csdc23vz_02.common;
 
-public class Customer extends Person {
+import java.io.Serializable;
+
+public class Customer extends Person implements Serializable {
     private Integer id;
     private String firstName;
     private String lastName;

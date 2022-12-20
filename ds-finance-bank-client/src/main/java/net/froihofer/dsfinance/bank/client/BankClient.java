@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory;
  * Main class for starting the bank client.
  *
  */
-public class BankClient {
+public class
+BankClient {
   private static Logger log = LoggerFactory.getLogger(BankClient.class);
   private static BankServer bankServer;
 
