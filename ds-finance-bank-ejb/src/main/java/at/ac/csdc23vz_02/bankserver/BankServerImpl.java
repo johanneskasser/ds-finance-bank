@@ -14,9 +14,10 @@ import java.util.Objects;
 public class BankServerImpl implements BankServer {
     private static final Logger log = LoggerFactory.getLogger(BankServerImpl.class);
 
-    public void createCustomer(Customer customer) throws BankServerException {
-        if(Objects.equals(customer.getFirstName(), "Johannes")){
-            throw new BankServerException("Johannes du Pisser", BankServerExceptionType.SESSION_FAULT);
+    public String createCustomer(Customer customer) throws BankServerException {
+        if(customer.getFullName().isEmpty()){
+            return "n/a";
         }
+        return customer.toString();
     }
 }

@@ -3,10 +3,8 @@ package at.ac.csdc23vz_02.common;
 import java.io.Serializable;
 
 public class Customer extends Person implements Serializable {
-    private Integer id;
-    private String firstName;
-    private String lastName;
-    private String password;
+
+    private static final long serialVersionUID = -558553967080513790L;
 
     public Customer(){
         super();

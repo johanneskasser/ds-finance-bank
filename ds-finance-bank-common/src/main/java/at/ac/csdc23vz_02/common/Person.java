@@ -1,6 +1,12 @@
 package at.ac.csdc23vz_02.common;
 
-public abstract class Person {
+import java.io.Serializable;
+
+public abstract class Person implements Serializable {
+
+    private static final long serialVersionUID = -558553967080513790L;
+
+
     private Integer id;
     private String firstName;
     private String lastName;
@@ -49,5 +55,13 @@ public abstract class Person {
 
     public String getFullName() {
         return firstName + " " + lastName;
+    }
+
+    @Override
+    public String toString() {
+        return "Person={\n" +
+                "  firstName=" + this.firstName +
+                "  \nlastName=" + this.lastName +
+                "\n}";
     }
 }

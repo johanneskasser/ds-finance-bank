@@ -44,7 +44,7 @@ public class UserInterface {
         customer.setPassword(pwFirst);
 
         try {
-            bankServer.createCustomer(customer);
+            System.out.println(bankServer.createCustomer(customer));
             System.out.println("User Created.");
             startLoginProcess();
         } catch (BankServerException e) {
