@@ -14,4 +14,5 @@ public interface BankServer {
 
     void createCustomer(Customer customer) throws BankServerException;
     boolean login(Customer customer) throws BankServerException;
+
 }

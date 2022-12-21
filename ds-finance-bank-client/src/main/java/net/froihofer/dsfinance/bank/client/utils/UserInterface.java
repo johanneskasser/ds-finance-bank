@@ -19,7 +19,7 @@ public class UserInterface {
     }
 
     public void init(){
-        System.out.println("\n====== WELCOME ======");
+        setModuleHeadline("====== WELCOME ======");
         setModuleHeadline("Login or Register");
         int output = showMenu(Arrays.asList("Login", "Register"));
         if(output == 1) {
@@ -38,7 +38,7 @@ public class UserInterface {
         String pwFirst = showInputElement("Password");
         String pwSecond = showInputElement("Repeat Password");
         while(!pwFirst.equals(pwSecond)) {
-            System.out.println("\nPasswords do not match!\n");
+            showResponseMessage("Passwords do not match!", MessageType.ERROR);
             pwFirst = showInputElement("Password");
             pwSecond = showInputElement("Repeat Password");
         }
@@ -46,31 +46,77 @@ public class UserInterface {
 
         try {
             bankServer.createCustomer(customer);
-            System.out.println("User Created.");
+            showResponseMessage("User Created.", MessageType.SUCCESS);
             startLoginProcess();
         } catch (BankServerException e) {
-            System.err.println("Something went wrong while trying to create Customer. Please see Stack Trace.");
+            showResponseMessage("Something went wrong while trying to create Customer. Please see Stack Trace.", MessageType.ERROR);
             e.printStackTrace();
         }
     }
 
     private void startLoginProcess(){
         Customer customer = new Customer();
-        //TODO
+        boolean successfulLogin = false;
         setModuleHeadline("Login");
-        customer.setUserName(showInputElement("Username"));
-        customer.setPassword(showInputElement("Password"));
-        try {
-            if(bankServer.login(customer)) {
-                System.out.println("Successful Login!");
-                //TODO: Go To Main Menu corresponding to the employee/customer
-            } else {
-                System.out.println("Wrong Password or Username!");
+
+        while(!successfulLogin) {
+            customer.setUserName(showInputElement("Username"));
+            customer.setPassword(showInputElement("Password"));
+            try {
+                if(bankServer.login(customer)) {
+                    showResponseMessage("Successful Login!", MessageType.SUCCESS);
+                    successfulLogin = true;
+                    //TODO: Go To Main Menu corresponding to the employee/customer
+                    showMainMenu(UserType.CUSTOMER);
+                } else {
+                    showResponseMessage("Wrong Password or Username!", MessageType.ERROR);
+                }
+            } catch (BankServerException bankServerException){
+                showResponseMessage("User does not exist!", MessageType.ERROR);
             }
-        } catch (BankServerException bankServerException){
-            System.out.println("Something went wrong.");
-            bankServerException.printStackTrace();
+
         }
+    }
+
+    private void showMainMenu(UserType userType) {
+        if(userType == UserType.CUSTOMER) {
+            //User is customer
+            setModuleHeadline("=== Main Menu for Customers ===");
+            int output = showMenu(Arrays.asList("Search available share", "Buy Share", "Sell Share", "Show Depot", "Manage personal Data", "Logout"));
+            switch (output) {
+                case 1: searchAvailableShare(); break;
+                case 2: buyShare(); break;
+                case 3: sellShare(); break;
+                case 4: showDepot(); break;
+                case 5: managePersonalData(); break;
+                case 6: logout(); break;
+            }
+        } else {
+            //TODO: User is Employee
+        }
+    }
+
+    private void logout() {
+    }
+
+    private void managePersonalData() {
+        showResponseMessage("Not implemented yet!", MessageType.ERROR);
+    }
+
+    private void showDepot() {
+        showResponseMessage("Not implemented yet!", MessageType.ERROR);
+    }
+
+    private void sellShare() {
+        showResponseMessage("Not implemented yet!", MessageType.ERROR);
+    }
+
+    private void buyShare() {
+        showResponseMessage("Not implemented yet!", MessageType.ERROR);
+    }
+
+    private void searchAvailableShare() {
+
     }
 
     private Integer showMenu(List<String> menuChoices) {
@@ -94,6 +140,9 @@ public class UserInterface {
         System.out.print(description + ": ");
         String s = in.nextLine();
         if(!Objects.equals(s, "")) {
+            if(s.contains(" ")) {
+                s = s.replace(" ", "");
+            }
             return s;
         }
         return "n/a";
@@ -113,6 +162,10 @@ public class UserInterface {
     }
 
     private void setModuleHeadline(String headline) {
-        System.out.println("\n" + headline + ":\n");
+        System.out.println(MessageType.HEADLINE.getCode() + "\n" + headline + ":\n" + MessageType.RESET.getCode());
+    }
+
+    private void showResponseMessage(String message, MessageType messageType) {
+        System.out.println(messageType.getCode() + "\n" + message + "\n" + MessageType.RESET.getCode());
     }
 }
