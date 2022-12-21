@@ -19,11 +19,11 @@
 
   <dependencies>
     <!-- Own dependencies -->
-    <!-- <dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>ds-finance-bank-common</artifactId>
       <version>${project.version}</version>
-    </dependency> -->
+    </dependency>
     
     <!-- External dependencies -->
     <dependency>

@@ -17,7 +17,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <build>
+  <!--<build>
     <plugins>
       <plugin>
         <groupId>org.apache.cxf</groupId>
@@ -42,7 +42,7 @@
         </executions>
       </plugin>
     </plugins>
-  </build>
+  </build>-->
   
   <dependencies>
     <!-- External dependencies -->
