@@ -3,6 +3,8 @@ package at.ac.csdc23vz_02.bankserver;
 import at.ac.csdc23vz_02.bankserver.entity.CustomerEntity;
 import at.ac.csdc23vz_02.bankserver.entity.CustomerEntityDAO;
 import at.ac.csdc23vz_02.common.*;
+import at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading.PublicStockQuote;
+import at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading.TradingWSException_Exception;
 import at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading.TradingWebService;
 import at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading.TradingWebServiceService;
 import at.ac.csdc23vz_02.common.exceptions.*;
@@ -15,6 +17,7 @@ import javax.inject.Inject;
 import javax.xml.ws.BindingProvider;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,12 +54,18 @@ public class BankServerImpl implements BankServer {
         String password = "DuTahkei2";
         try{
             tradingWebServiceService = new TradingWebServiceService();
-            tradingWebService = tradingWebServiceService.getTradingWebServicePort();
-           // bindingprovider = (BindingProvider)tradingWebService;
+            tradingWebService = tradingWebServiceService.getTradingWebServicePort(); //Funktioniert nicht
+            bindingprovider = (BindingProvider)tradingWebService;
 
-            //bindingprovider.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, user);
-          //  bindingprovider.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
+            bindingprovider.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, user);
+            bindingprovider.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
 
+            List<String> stock = new ArrayList<>();
+
+            List<PublicStockQuote> stockinfo = tradingWebService.findStockQuotesByCompanyName(stockname);
+            for(PublicStockQuote var: stockinfo){
+                stock.add(var.getSymbol());
+            }
 
         } catch (Exception e) {
             return e.toString();
