@@ -78,7 +78,7 @@ public class UserInterface {
         }
     }
 
-    private void showMainMenu(UserType userType) {
+    private void showMainMenu(UserType userType) throws BankServerException {
         if(userType == UserType.CUSTOMER) {
             //User is customer
             setModuleHeadline("=== Main Menu for Customers ===");
@@ -115,7 +115,10 @@ public class UserInterface {
         showResponseMessage("Not implemented yet!", MessageType.ERROR);
     }
 
-    private void searchAvailableShare() {
+    private void searchAvailableShare() throws BankServerException {
+        String input = showInputElement("Name a Stock to be shown:");
+        String output = bankServer.listStock(input);
+        showResponseMessage(output, MessageType.SUCCESS);
 
     }
 
