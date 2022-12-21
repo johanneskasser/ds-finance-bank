@@ -1,4 +1,4 @@
-package net.froihofer.dsfinance.ws.trading;
+package at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -7,6 +7,7 @@ import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
+import java.util.List;
 
 /**
  * Available stock quotes can be searched with the operation 'findStockQuotesByCompanyName'. The other operations generally accept a 'symbol' parameter that uniquely identifies a stock option.
@@ -42,7 +43,7 @@ public interface TradingWebService {
     @RequestWrapper(localName = "findStockQuotesByCompanyName", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.FindStockQuotesByCompanyName")
     @ResponseWrapper(localName = "findStockQuotesByCompanyNameResponse", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.FindStockQuotesByCompanyNameResponse")
     @WebResult(name = "return", targetNamespace = "")
-    public java.util.List<net.froihofer.dsfinance.ws.trading.PublicStockQuote> findStockQuotesByCompanyName(
+    public java.util.List<PublicStockQuote> findStockQuotesByCompanyName(
 
         @WebParam(name = "partOfCompanyName", targetNamespace = "")
         java.lang.String partOfCompanyName
@@ -70,10 +71,10 @@ public interface TradingWebService {
     @RequestWrapper(localName = "getStockQuotes", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.GetStockQuotes")
     @ResponseWrapper(localName = "getStockQuotesResponse", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.GetStockQuotesResponse")
     @WebResult(name = "return", targetNamespace = "")
-    public java.util.List<net.froihofer.dsfinance.ws.trading.PublicStockQuote> getStockQuotes(
+    public List<PublicStockQuote> getStockQuotes(
 
         @WebParam(name = "symbols", targetNamespace = "")
-        java.util.List<java.lang.String> symbols
+        List<java.lang.String> symbols
     ) throws TradingWSException_Exception;
 
     /**
@@ -83,7 +84,7 @@ public interface TradingWebService {
     @RequestWrapper(localName = "getStockQuoteHistory", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.GetStockQuoteHistory")
     @ResponseWrapper(localName = "getStockQuoteHistoryResponse", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.GetStockQuoteHistoryResponse")
     @WebResult(name = "return", targetNamespace = "")
-    public java.util.List<net.froihofer.dsfinance.ws.trading.PublicStockQuote> getStockQuoteHistory(
+    public List<PublicStockQuote> getStockQuoteHistory(
 
         @WebParam(name = "symbol", targetNamespace = "")
         java.lang.String symbol

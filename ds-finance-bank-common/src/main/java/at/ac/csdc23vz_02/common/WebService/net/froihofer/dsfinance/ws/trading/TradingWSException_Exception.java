@@ -1,5 +1,5 @@
 
-package net.froihofer.dsfinance.ws.trading;
+package at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading;
 
 import javax.xml.ws.WebFault;
 
@@ -13,7 +13,7 @@ import javax.xml.ws.WebFault;
 @WebFault(name = "TradingWSException", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/")
 public class TradingWSException_Exception extends Exception {
 
-    private net.froihofer.dsfinance.ws.trading.TradingWSException faultInfo;
+    private TradingWSException faultInfo;
 
     public TradingWSException_Exception() {
         super();

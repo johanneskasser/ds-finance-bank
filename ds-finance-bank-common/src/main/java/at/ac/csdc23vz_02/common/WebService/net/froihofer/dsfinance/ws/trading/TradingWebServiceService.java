@@ -1,4 +1,4 @@
-package net.froihofer.dsfinance.ws.trading;
+package at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading;
 
 import java.net.MalformedURLException;
 import java.net.URL;
