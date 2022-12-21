@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class BuyResponse {
 
+
     @XmlElement(name = "return")
     protected BigDecimal _return;
 

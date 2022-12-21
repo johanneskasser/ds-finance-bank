@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "findStockQuotesByCompanyName", propOrder = {
     "partOfCompanyName"
 })
+
 public class FindStockQuotesByCompanyName {
 
     @XmlElement(required = true)

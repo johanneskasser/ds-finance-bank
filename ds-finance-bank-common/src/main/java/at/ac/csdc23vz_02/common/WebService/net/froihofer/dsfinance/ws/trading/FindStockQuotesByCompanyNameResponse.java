@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class FindStockQuotesByCompanyNameResponse {
 
+
     @XmlElement(name = "return")
     protected List<PublicStockQuote> _return;
 

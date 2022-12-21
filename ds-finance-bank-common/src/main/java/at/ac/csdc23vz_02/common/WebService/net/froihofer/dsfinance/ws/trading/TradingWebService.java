@@ -65,6 +65,7 @@ public interface TradingWebService {
 
     /**
      * Returns the stock quotes for the stock options identified by the 'symbols' parameter.
+     *
      */
     @WebMethod
     @RequestWrapper(localName = "getStockQuotes", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.GetStockQuotes")

@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class GetStockQuotes {
 
+
     @XmlElement(required = true)
     protected List<String> symbols;
 

@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class Sell {
 
+
     @XmlElement(required = true)
     protected String symbol;
     protected int shares;

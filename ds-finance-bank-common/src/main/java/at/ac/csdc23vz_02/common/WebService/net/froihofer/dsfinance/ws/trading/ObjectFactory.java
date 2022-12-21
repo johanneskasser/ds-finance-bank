@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
+
     private final static QName _Buy_QNAME = new QName("http://trading.ws.dsfinance.froihofer.net/", "buy");
     private final static QName _BuyResponse_QNAME = new QName("http://trading.ws.dsfinance.froihofer.net/", "buyResponse");
     private final static QName _FindStockQuotesByCompanyName_QNAME = new QName("http://trading.ws.dsfinance.froihofer.net/", "findStockQuotesByCompanyName");

@@ -37,6 +37,7 @@ public class TradingWSException_Exception extends Exception {
         this.faultInfo = tradingWSException;
     }
 
+
     public TradingWSException getFaultInfo() {
         return this.faultInfo;
     }

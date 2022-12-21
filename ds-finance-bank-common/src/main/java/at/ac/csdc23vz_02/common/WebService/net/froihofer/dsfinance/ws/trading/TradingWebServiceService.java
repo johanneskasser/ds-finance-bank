@@ -35,6 +35,7 @@ public class TradingWebServiceService extends Service {
         WSDL_LOCATION = url;
     }
 
+
     public TradingWebServiceService(URL wsdlLocation) {
         super(wsdlLocation, SERVICE);
     }

@@ -46,6 +46,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 })
 public class PublicStockQuote {
 
+
     protected String companyName;
     protected Long floatShares;
     protected BigDecimal lastTradePrice;

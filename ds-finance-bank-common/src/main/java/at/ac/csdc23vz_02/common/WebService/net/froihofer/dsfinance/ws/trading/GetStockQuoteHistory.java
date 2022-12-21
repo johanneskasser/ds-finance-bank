@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class GetStockQuoteHistory {
 
+
     @XmlElement(required = true)
     protected String symbol;
 

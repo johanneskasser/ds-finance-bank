@@ -41,6 +41,7 @@ public class TradingWSException {
      *     {@link String }
      *     
      */
+
     public String getMessage() {
         return message;
     }

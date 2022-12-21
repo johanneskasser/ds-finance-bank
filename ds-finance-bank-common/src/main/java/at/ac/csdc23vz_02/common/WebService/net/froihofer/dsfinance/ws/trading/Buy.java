@@ -38,6 +38,7 @@ public class Buy {
     protected String symbol;
     protected int shares;
 
+
     /**
      * Ruft den Wert der symbol-Eigenschaft ab.
      * 
