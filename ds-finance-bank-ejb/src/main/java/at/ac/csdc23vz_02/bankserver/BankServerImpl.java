@@ -46,10 +46,10 @@ public class BankServerImpl implements BankServer {
     }
 
 
-    public List<String> listStock(String stockname)  throws BankServerException{
+    public List<Stock> listStock(String stockname)  throws BankServerException{
         String user = "csdc23vz_02";
         String password = "DuTahkei2";
-        List<String> stock = new ArrayList<>();
+        List<Stock> stock = new ArrayList<>();
         try {
             tradingWebServiceService = new TradingWebServiceService();
             tradingWebService = tradingWebServiceService.getTradingWebServicePort();
@@ -60,7 +60,7 @@ public class BankServerImpl implements BankServer {
 
             List<PublicStockQuote> stockinfo = tradingWebService.findStockQuotesByCompanyName(stockname);
             for(PublicStockQuote var: stockinfo){
-                stock.add(var.getSymbol());
+                stock.add(new Stock(var));
             }
 
         } catch (Exception e) {

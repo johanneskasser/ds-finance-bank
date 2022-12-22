@@ -1,5 +1,7 @@
 package at.ac.csdc23vz_02.common;
 
+import net.froihofer.dsfinance.ws.trading.PublicStockQuote;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -24,6 +26,48 @@ public class Stock implements Serializable {
     }
 
     public Stock() {
+    }
+
+    //TODO: Check Methods if correct with Debugger!
+    public Stock(PublicStockQuote publicStockQuote) {
+        this.companyName = checkInputIfEmpty(publicStockQuote.getCompanyName());
+        this.lastTradePrice = checkInputIfEmpty(publicStockQuote.getLastTradePrice().doubleValue());
+        this.lastTradeTime = checkInputIfEmpty(publicStockQuote.getLastTradeTime().toGregorianCalendar().getTime());
+        this.marketCapitalization = checkInputIfEmpty(publicStockQuote.getMarketCapitalization());
+        this.stockExchange = checkInputIfEmpty(publicStockQuote.getStockExchange());
+        this.symbol = checkInputIfEmpty(publicStockQuote.getSymbol());
+    }
+
+    private String checkInputIfEmpty(String string) {
+        if(string.isEmpty()){
+            return "";
+        } else {
+            return string;
+        }
+    }
+
+    private Double checkInputIfEmpty(Double in) {
+        if(in.toString().isEmpty()){
+            return 0.0;
+        } else {
+            return in;
+        }
+    }
+
+    private Date checkInputIfEmpty(Date date) {
+        if(date.toString().isEmpty()){
+            return new Date();
+        } else {
+            return date;
+        }
+    }
+
+    private Long checkInputIfEmpty(Long in) {
+        if(in.toString().isEmpty()){
+            return 0L;
+        } else {
+            return in;
+        }
     }
 
     public String getCompanyName() {
@@ -72,5 +116,13 @@ public class Stock implements Serializable {
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
+    }
+
+    public String toString() {
+        return "Company Name: " + this.getCompanyName() + "\n" +
+                "Symbol: " + this.getSymbol() + "\n" +
+                "Last Trade Price: " + this.getLastTradePrice().toString() + "\n" +
+                "Last Trade Time: " + this.getLastTradeTime().toString() + "\n" +
+                "Market Capitalization: " + this.getMarketCapitalization().toString();
     }
 }

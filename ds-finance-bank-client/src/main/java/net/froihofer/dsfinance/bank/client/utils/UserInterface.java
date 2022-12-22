@@ -2,6 +2,7 @@ package net.froihofer.dsfinance.bank.client.utils;
 
 import at.ac.csdc23vz_02.common.BankServer;
 import at.ac.csdc23vz_02.common.Customer;
+import at.ac.csdc23vz_02.common.Stock;
 import at.ac.csdc23vz_02.common.exceptions.BankServerException;
 
 import java.util.Arrays;
@@ -130,8 +131,12 @@ public class UserInterface {
         setModuleHeadline("Search for available Shares");
         String input = showInputElement("Name a Stock to be shown");
         try {
-            List<String> output = bankServer.listStock(input);
-            showListing(output);
+            List<Stock> output = bankServer.listStock(input);
+            if(output.isEmpty()) {
+                showResponseMessage("No Stocks found!", MessageType.INFO);
+            } else {
+                showListing(output);
+            }
             endOfModuleChoices();
         } catch (BankServerException bankServerException) {
             showResponseMessage("Failed to read Stocks!", MessageType.ERROR);
@@ -155,11 +160,11 @@ public class UserInterface {
         return response;
     }
 
-    private void showListing(List<String> list) {
+    private void showListing(List<Stock> list) {
         int count = 1;
-        for(String listElement : list) {
+        for(Stock stockElement : list) {
             System.out.println();
-            System.out.println(count + ") " + listElement);
+            System.out.println(count + ") " + "\n" + stockElement.toString());
             count++;
         }
     }
@@ -199,8 +204,10 @@ public class UserInterface {
 
     private void endOfModuleChoices() throws BankServerException {
         setModuleHeadline("Module completed. Select next step");
-        int output = showMenu(Arrays.asList("Return to main Menu", "End Application"));
+        int output = showMenu(Arrays.asList("Run Module again","Return to main Menu", "End Application"));
         if(output == 1) {
+            searchAvailableShare();
+        } else if (output == 2) {
             showMainMenu(UserType.CUSTOMER);
         } else {
             endApplication();

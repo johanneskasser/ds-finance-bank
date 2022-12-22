@@ -16,7 +16,7 @@ public interface BankServer {
     void createCustomer(Customer customer) throws BankServerException;
     boolean login(Customer customer) throws BankServerException;
 
-    List<String> listStock(String stockname) throws BankServerException;
+    List<Stock> listStock(String stockname) throws BankServerException;
 
     Boolean buy(String share, int shares);
 
