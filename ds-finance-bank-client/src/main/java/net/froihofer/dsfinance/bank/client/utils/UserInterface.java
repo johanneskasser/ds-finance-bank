@@ -96,28 +96,34 @@ public class UserInterface {
         }
     }
 
-    private void logout() {
+    private void logout() throws BankServerException {
         setModuleHeadline("Logout");
+        showResponseMessage("Not implemented yet!", MessageType.ERROR);
+        endOfModuleChoices();
     }
 
-    private void managePersonalData() {
+    private void managePersonalData() throws BankServerException {
         setModuleHeadline("Manage Personal Data");
         showResponseMessage("Not implemented yet!", MessageType.ERROR);
+        endOfModuleChoices();
     }
 
-    private void showDepot() {
+    private void showDepot() throws BankServerException {
         setModuleHeadline("Show personal Depot");
         showResponseMessage("Not implemented yet!", MessageType.ERROR);
+        endOfModuleChoices();
     }
 
-    private void sellShare() {
+    private void sellShare() throws BankServerException {
         setModuleHeadline("Sell Share");
         showResponseMessage("Not implemented yet!", MessageType.ERROR);
+        endOfModuleChoices();
     }
 
-    private void buyShare() {
+    private void buyShare() throws BankServerException {
         setModuleHeadline("Buy Share");
         showResponseMessage("Not implemented yet!", MessageType.ERROR);
+        endOfModuleChoices();
     }
 
     private void searchAvailableShare() throws BankServerException {
@@ -125,9 +131,8 @@ public class UserInterface {
         String input = showInputElement("Name a Stock to be shown");
         try {
             List<String> output = bankServer.listStock(input);
-            for(String stockSymbol : output) {
-                showResponseMessage(stockSymbol, MessageType.INFO);
-            }
+            showListing(output);
+            endOfModuleChoices();
         } catch (BankServerException bankServerException) {
             showResponseMessage("Failed to read Stocks!", MessageType.ERROR);
         }
@@ -148,6 +153,15 @@ public class UserInterface {
         }
 
         return response;
+    }
+
+    private void showListing(List<String> list) {
+        int count = 1;
+        for(String listElement : list) {
+            System.out.println();
+            System.out.println(count + ") " + listElement);
+            count++;
+        }
     }
 
     private String showInputElement(String description) {
@@ -181,5 +195,19 @@ public class UserInterface {
 
     private void showResponseMessage(String message, MessageType messageType) {
         System.out.println(messageType.getCode() + "\n" + message + "\n" + MessageType.RESET.getCode());
+    }
+
+    private void endOfModuleChoices() throws BankServerException {
+        setModuleHeadline("Module completed. Select next step");
+        int output = showMenu(Arrays.asList("Return to main Menu", "End Application"));
+        if(output == 1) {
+            showMainMenu(UserType.CUSTOMER);
+        } else {
+            endApplication();
+        }
+    }
+
+    private int endApplication() {
+        return 0;
     }
 }
