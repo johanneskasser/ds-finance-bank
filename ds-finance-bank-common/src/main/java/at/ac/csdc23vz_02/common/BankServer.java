@@ -16,4 +16,20 @@ public interface BankServer {
     boolean login(Customer customer) throws BankServerException;
 
     String listStock(String stockname) throws BankServerException;
+
+    Boolean buy(String share, int shares);
+
+    Boolean sell(String share, int shares);
+
+    String listDepot();
+
+    String listDepot(int customer_id);
+
+    Boolean buy_for_customer(String share, int customer_id, int shares);
+
+    Boolean sell_for_customer(String share, int customer_id, int shares);
+
+    Customer search_customer_with_id(int customer_id);
+
+    Customer search_customer_with_name(String first_name, String last_name);
 }

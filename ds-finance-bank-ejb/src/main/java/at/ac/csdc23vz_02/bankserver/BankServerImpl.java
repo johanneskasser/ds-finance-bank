@@ -73,4 +73,45 @@ public class BankServerImpl implements BankServer {
         }
         return"Teststock";
     }
+
+
+    @Override
+    public Boolean buy(String share, int shares) {
+        return null;
+    }
+
+    @Override
+    public Boolean sell(String share, int shares) {
+        return null;
+    }
+
+    @Override
+    public String listDepot() {
+        return null;
+    }
+
+    @Override
+    public String listDepot(int customer_id) {
+        return null;
+    }
+
+    @Override
+    public Boolean buy_for_customer(String share, int customer_id, int shares) {
+        return null;
+    }
+
+    @Override
+    public Boolean sell_for_customer(String share, int customer_id, int shares) {
+        return null;
+    }
+
+    @Override
+    public Customer search_customer_with_id(int customer_id) {
+        return null;
+    }
+
+    @Override
+    public Customer search_customer_with_name(String first_name, String last_name) {
+        return null;
+    }
 }
