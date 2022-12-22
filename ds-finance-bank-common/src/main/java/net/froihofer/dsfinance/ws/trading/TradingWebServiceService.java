@@ -15,7 +15,7 @@ import javax.xml.ws.Service;
  *
  */
 @WebServiceClient(name = "TradingWebServiceService",
-                  wsdlLocation = "file:/C:/Users/johan/IdeaProjects/ds-finance-bank_csdc23vz_02/ds-finance-bank-common/src/main/resources/WebService.wsdl",
+                  wsdlLocation = "https://edu.dedisys.org/ds-finance/ws/TradingService?wsdl",
                   targetNamespace = "http://trading.ws.dsfinance.froihofer.net/")
 public class TradingWebServiceService extends Service {
 
@@ -26,11 +26,11 @@ public class TradingWebServiceService extends Service {
     static {
         URL url = null;
         try {
-            url = new URL("file:/C:/Users/johan/IdeaProjects/ds-finance-bank_csdc23vz_02/ds-finance-bank-common/src/main/resources/WebService.wsdl");
+            url = new URL("https://edu.dedisys.org/ds-finance/ws/TradingService?wsdl");
         } catch (MalformedURLException e) {
             java.util.logging.Logger.getLogger(TradingWebServiceService.class.getName())
                 .log(java.util.logging.Level.INFO,
-                     "Can not initialize the default wsdl from {0}", "file:/C:/Users/johan/IdeaProjects/ds-finance-bank_csdc23vz_02/ds-finance-bank-common/src/main/resources/WebService.wsdl");
+                     "Can not initialize the default wsdl from {0}", "https://edu.dedisys.org/ds-finance/ws/TradingService?wsdl");
         }
         WSDL_LOCATION = url;
     }
