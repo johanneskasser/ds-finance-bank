@@ -1,5 +1,5 @@
 
-package at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading;
+package net.froihofer.dsfinance.ws.trading;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
@@ -23,7 +23,6 @@ import javax.xml.namespace.QName;
  */
 @XmlRegistry
 public class ObjectFactory {
-
 
     private final static QName _Buy_QNAME = new QName("http://trading.ws.dsfinance.froihofer.net/", "buy");
     private final static QName _BuyResponse_QNAME = new QName("http://trading.ws.dsfinance.froihofer.net/", "buyResponse");

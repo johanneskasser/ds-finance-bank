@@ -1,5 +1,5 @@
 
-package at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading;
+package net.froihofer.dsfinance.ws.trading;
 
 import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -45,7 +45,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "symbol"
 })
 public class PublicStockQuote {
-
 
     protected String companyName;
     protected Long floatShares;

@@ -1,5 +1,5 @@
 
-package at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading;
+package net.froihofer.dsfinance.ws.trading;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für getStockQuotes complex type.
+ * <p>Java-Klasse für getStockQuotesResponse complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="getStockQuotes"&gt;
+ * &lt;complexType name="getStockQuotesResponse"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="symbols" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="return" type="{http://trading.ws.dsfinance.froihofer.net/}publicStockQuote" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -29,42 +29,41 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "getStockQuotes", propOrder = {
-    "symbols"
+@XmlType(name = "getStockQuotesResponse", propOrder = {
+    "_return"
 })
-public class GetStockQuotes {
+public class GetStockQuotesResponse {
 
-
-    @XmlElement(required = true)
-    protected List<String> symbols;
+    @XmlElement(name = "return")
+    protected List<PublicStockQuote> _return;
 
     /**
-     * Gets the value of the symbols property.
+     * Gets the value of the return property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the symbols property.
+     * This is why there is not a <CODE>set</CODE> method for the return property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getSymbols().add(newItem);
+     *    getReturn().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link String }
+     * {@link PublicStockQuote }
      * 
      * 
      */
-    public List<String> getSymbols() {
-        if (symbols == null) {
-            symbols = new ArrayList<String>();
+    public List<PublicStockQuote> getReturn() {
+        if (_return == null) {
+            _return = new ArrayList<PublicStockQuote>();
         }
-        return this.symbols;
+        return this._return;
     }
 
 }

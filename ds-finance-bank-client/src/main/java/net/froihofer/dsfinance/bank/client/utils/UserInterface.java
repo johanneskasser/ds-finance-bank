@@ -97,29 +97,40 @@ public class UserInterface {
     }
 
     private void logout() {
+        setModuleHeadline("Logout");
     }
 
     private void managePersonalData() {
+        setModuleHeadline("Manage Personal Data");
         showResponseMessage("Not implemented yet!", MessageType.ERROR);
     }
 
     private void showDepot() {
+        setModuleHeadline("Show personal Depot");
         showResponseMessage("Not implemented yet!", MessageType.ERROR);
     }
 
     private void sellShare() {
+        setModuleHeadline("Sell Share");
         showResponseMessage("Not implemented yet!", MessageType.ERROR);
     }
 
     private void buyShare() {
+        setModuleHeadline("Buy Share");
         showResponseMessage("Not implemented yet!", MessageType.ERROR);
     }
 
     private void searchAvailableShare() throws BankServerException {
-        String input = showInputElement("Name a Stock to be shown:");
-        String output = bankServer.listStock(input);
-        showResponseMessage(output, MessageType.SUCCESS);
-
+        setModuleHeadline("Search for available Shares");
+        String input = showInputElement("Name a Stock to be shown");
+        try {
+            List<String> output = bankServer.listStock(input);
+            for(String stockSymbol : output) {
+                showResponseMessage(stockSymbol, MessageType.INFO);
+            }
+        } catch (BankServerException bankServerException) {
+            showResponseMessage("Failed to read Stocks!", MessageType.ERROR);
+        }
     }
 
     private Integer showMenu(List<String> menuChoices) {

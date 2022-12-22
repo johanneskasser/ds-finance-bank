@@ -1,5 +1,5 @@
 
-package at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading;
+package net.froihofer.dsfinance.ws.trading;
 
 import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -9,12 +9,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für buyResponse complex type.
+ * <p>Java-Klasse für sellResponse complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="buyResponse"&gt;
+ * &lt;complexType name="sellResponse"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
@@ -28,11 +28,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "buyResponse", propOrder = {
+@XmlType(name = "sellResponse", propOrder = {
     "_return"
 })
-public class BuyResponse {
-
+public class SellResponse {
 
     @XmlElement(name = "return")
     protected BigDecimal _return;

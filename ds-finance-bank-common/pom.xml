@@ -28,7 +28,7 @@
             <id>generate-sources</id>
             <phase>generate-sources</phase>
             <configuration>
-              <sourceRoot>${basedir}/src/main/java/at/ac/csdc23vz_02/common/WebService</sourceRoot>
+              <sourceRoot>${basedir}/src/main/java/net/froihofer/dsfinance/ws/trading</sourceRoot>
               <wsdlOptions>
                 <wsdlOption>
                   <wsdl>${basedir}/src/main/resources/WebService.wsdl</wsdl>

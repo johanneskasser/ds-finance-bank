@@ -3,11 +3,10 @@ package at.ac.csdc23vz_02.bankserver;
 import at.ac.csdc23vz_02.bankserver.entity.CustomerEntity;
 import at.ac.csdc23vz_02.bankserver.entity.CustomerEntityDAO;
 import at.ac.csdc23vz_02.common.*;
-import at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading.PublicStockQuote;
-import at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading.TradingWSException_Exception;
-import at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading.TradingWebService;
-import at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading.TradingWebServiceService;
 import at.ac.csdc23vz_02.common.exceptions.*;
+import net.froihofer.dsfinance.ws.trading.PublicStockQuote;
+import net.froihofer.dsfinance.ws.trading.TradingWebService;
+import net.froihofer.dsfinance.ws.trading.TradingWebServiceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,11 +14,8 @@ import javax.annotation.security.PermitAll;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.xml.ws.BindingProvider;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 @Stateless(name="BankServer")
@@ -49,18 +45,18 @@ public class BankServerImpl implements BankServer {
         return customerEntity.get(0).getPwHash().equals(customer.getPassword());
     }
 
-    public String listStock(String stockname)  throws BankServerException{
+
+    public List<String> listStock(String stockname)  throws BankServerException{
         String user = "csdc23vz_02";
         String password = "DuTahkei2";
-        try{
+        List<String> stock = new ArrayList<>();
+        try {
             tradingWebServiceService = new TradingWebServiceService();
-            tradingWebService = tradingWebServiceService.getTradingWebServicePort(); //Funktioniert nicht
+            tradingWebService = tradingWebServiceService.getTradingWebServicePort();
             bindingprovider = (BindingProvider)tradingWebService;
 
             bindingprovider.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, user);
             bindingprovider.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
-
-            List<String> stock = new ArrayList<>();
 
             List<PublicStockQuote> stockinfo = tradingWebService.findStockQuotesByCompanyName(stockname);
             for(PublicStockQuote var: stockinfo){
@@ -68,12 +64,10 @@ public class BankServerImpl implements BankServer {
             }
 
         } catch (Exception e) {
-            return e.toString();
-           // e.printStackTrace();
+            throw new BankServerException("Failed to read Stocks!", BankServerExceptionType.WEBSERVICE_FAULT);
         }
-        return"Teststock";
+        return stock;
     }
-
 
     @Override
     public Boolean buy(String share, int shares) {

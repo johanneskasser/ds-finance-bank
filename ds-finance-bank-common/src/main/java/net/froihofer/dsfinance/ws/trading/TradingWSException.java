@@ -1,5 +1,5 @@
 
-package at.ac.csdc23vz_02.common.WebService.net.froihofer.dsfinance.ws.trading;
+package net.froihofer.dsfinance.ws.trading;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -41,7 +41,6 @@ public class TradingWSException {
      *     {@link String }
      *     
      */
-
     public String getMessage() {
         return message;
     }

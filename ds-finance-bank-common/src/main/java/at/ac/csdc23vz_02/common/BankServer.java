@@ -3,6 +3,7 @@ package at.ac.csdc23vz_02.common;
 import at.ac.csdc23vz_02.common.exceptions.BankServerException;
 
 import javax.ejb.Remote;
+import java.util.List;
 
 /**
  * at.ac.csdc23vz_02.common.BankServer Method declaration Interface
@@ -15,7 +16,7 @@ public interface BankServer {
     void createCustomer(Customer customer) throws BankServerException;
     boolean login(Customer customer) throws BankServerException;
 
-    String listStock(String stockname) throws BankServerException;
+    List<String> listStock(String stockname) throws BankServerException;
 
     Boolean buy(String share, int shares);
 
