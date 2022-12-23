@@ -37,12 +37,17 @@ public class BankServerImpl implements BankServer {
 
     }
 
-    public boolean login(Customer customer) throws BankServerException {
-        List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(customer.getUserName());
+    @Override
+    public void createEmployee(Employee employee) throws BankServerException {
+        //TODO
+    }
+
+    public boolean login(List<String> credentials) throws BankServerException {
+        List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(credentials.get(0));
         if(customerEntity.isEmpty()){
             throw new BankServerException("No Such User!", BankServerExceptionType.SESSION_FAULT);
         }
-        return customerEntity.get(0).getPwHash().equals(customer.getPassword());
+        return customerEntity.get(0).getPwHash().equals(credentials.get(1));
     }
 
 

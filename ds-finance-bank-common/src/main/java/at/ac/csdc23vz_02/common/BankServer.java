@@ -14,7 +14,8 @@ import java.util.List;
 public interface BankServer {
 
     void createCustomer(Customer customer) throws BankServerException;
-    boolean login(Customer customer) throws BankServerException;
+    void createEmployee(Employee employee) throws BankServerException;
+    boolean login(List<String> credentials) throws BankServerException;
 
     List<Stock> listStock(String stockname) throws BankServerException;
 
