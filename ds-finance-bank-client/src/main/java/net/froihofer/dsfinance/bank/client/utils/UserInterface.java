@@ -100,8 +100,6 @@ public class UserInterface {
         return false;
     }
 
-
-    @RolesAllowed({"customer", "employee"})
     private void showMainMenu(UserType userType) throws BankServerException {
         if(userType == UserType.CUSTOMER) {
             //User is customer
