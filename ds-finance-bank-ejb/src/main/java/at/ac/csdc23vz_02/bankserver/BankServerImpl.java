@@ -7,13 +7,18 @@ import at.ac.csdc23vz_02.common.exceptions.*;
 import net.froihofer.dsfinance.ws.trading.PublicStockQuote;
 import net.froihofer.dsfinance.ws.trading.TradingWebService;
 import net.froihofer.dsfinance.ws.trading.TradingWebServiceService;
+import net.froihofer.util.jboss.WildflyAuthDBHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.xml.ws.BindingProvider;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,26 +27,38 @@ import java.util.List;
 @PermitAll
 public class BankServerImpl implements BankServer {
     private static final Logger log = LoggerFactory.getLogger(BankServerImpl.class);
+    private WildflyAuthDBHelper wildflyAuthDBHelper;
+
     @Inject CustomerEntityDAO customerEntityDAO;
+    @Resource private SessionContext sessionContext;
 
     TradingWebService tradingWebService;
     TradingWebServiceService tradingWebServiceService;
     BindingProvider bindingprovider;
 
+
+    /**
+     * Persists Customer to Database and adds the user simultaneously to the Wildfly Auth Database
+     * @param customer Customer Object to add
+     * @throws BankServerException When User is already in Database or if Adding to wildfly Database did not work
+     */
+    @RolesAllowed({"employee"})
     public void createCustomer(Customer customer) throws BankServerException {
-        //TODO: Check Permissions of creating User!
-        //TODO: Check if Username already exists!
         CustomerEntity customerEntity = new CustomerEntity(customer);
         customerEntityDAO.persist(customerEntity);
-
-
+        try {
+            wildflyAuthDBHelper.addUser(customer.getUserName(), customer.getPassword(), new String[]{"customer"});
+        } catch (IOException ioException) {
+            throw new BankServerException("Error when creating User at Wildfly Server" + ioException, BankServerExceptionType.SESSION_FAULT);
+        }
     }
 
-    @Override
+    @RolesAllowed({"employee"})
     public void createEmployee(Employee employee) throws BankServerException {
         //TODO
     }
 
+    @RolesAllowed({"employee", "customer"})
     public boolean login(List<String> credentials) throws BankServerException {
         List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(credentials.get(0));
         if(customerEntity.isEmpty()){
@@ -51,6 +68,7 @@ public class BankServerImpl implements BankServer {
     }
 
 
+    @RolesAllowed({"employee", "customer"})
     public List<Stock> listStock(String stockname)  throws BankServerException{
         String user = "csdc23vz_02";
         String password = "DuTahkei2";
@@ -74,42 +92,42 @@ public class BankServerImpl implements BankServer {
         return stock;
     }
 
-    @Override
+    @RolesAllowed({"customer"})
     public Boolean buy(String share, int shares) {
         return null;
     }
 
-    @Override
+    @RolesAllowed({"customer"})
     public Boolean sell(String share, int shares) {
         return null;
     }
 
-    @Override
+    @RolesAllowed({"customer"})
     public String listDepot() {
         return null;
     }
 
-    @Override
+    @RolesAllowed({"customer"})
     public String listDepot(int customer_id) {
         return null;
     }
 
-    @Override
+    @RolesAllowed({"employee"})
     public Boolean buy_for_customer(String share, int customer_id, int shares) {
         return null;
     }
 
-    @Override
+    @RolesAllowed({"employee"})
     public Boolean sell_for_customer(String share, int customer_id, int shares) {
         return null;
     }
 
-    @Override
+    @RolesAllowed({"employee"})
     public Customer search_customer_with_id(int customer_id) {
         return null;
     }
 
-    @Override
+    @RolesAllowed({"employee"})
     public Customer search_customer_with_name(String first_name, String last_name) {
         return null;
     }

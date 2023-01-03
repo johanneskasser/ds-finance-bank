@@ -101,6 +101,7 @@ public class UserInterface {
     }
 
     private void showMainMenu(UserType userType) throws BankServerException {
+
         if(userType == UserType.CUSTOMER) {
             //User is customer
             setModuleHeadline("=== Main Menu for Customers ===");
@@ -121,7 +122,8 @@ public class UserInterface {
         } else if(userType == UserType.EMPLOYEE){
             //TODO: User is Employee
             setModuleHeadline("=== Main Menu for Employees ===");
-            int output = showMenu(Arrays.asList("Create Customer or Employee",
+            int output = showMenu(Arrays.asList(
+                    "Create Customer or Employee",
                     "Search Customer",
                     "Search Available share",
                     "Buy Share for Customer",
@@ -267,6 +269,7 @@ public class UserInterface {
             searchAvailableShare();
         } else if (output == 2) {
             showMainMenu(UserType.CUSTOMER);
+        } else if (output == 3) {
         }
     }
 
