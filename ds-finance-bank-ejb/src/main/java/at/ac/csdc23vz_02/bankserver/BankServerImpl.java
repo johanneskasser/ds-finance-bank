@@ -92,8 +92,15 @@ public class BankServerImpl implements BankServer {
         return stock;
     }
 
+
+    Boolean buy_stock(String share, int customer_id, int shares) {
+        return true;
+    }
+
     @RolesAllowed({"customer"})
     public Boolean buy(String share, int shares) {
+        int currentuserid = 5;
+        buy_stock(share,currentuserid,shares);
         return null;
     }
 
@@ -114,6 +121,8 @@ public class BankServerImpl implements BankServer {
 
     @RolesAllowed({"employee"})
     public Boolean buy_for_customer(String share, int customer_id, int shares) {
+
+        buy_stock(share,customer_id,shares);
         return null;
     }
 
