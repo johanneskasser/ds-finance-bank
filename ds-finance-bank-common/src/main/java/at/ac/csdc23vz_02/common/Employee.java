@@ -11,8 +11,19 @@ public class Employee extends Person implements Serializable {
         super(firstName, lastName, userName, password);
     }
 
-    public Employee() {
+    public Employee(Person person) {
+        super(person.getFirstName(), person.getLastName(), person.getUserName(), person.getPassword());
+    }
 
+    public Employee() {
+        super();
+    }
+
+    public void setPerson(Person person) {
+        setUserName(person.getUserName());
+        setFirstName(person.getFirstName());
+        setLastName(person.getLastName());
+        setPassword(person.getPassword());
     }
 
 }

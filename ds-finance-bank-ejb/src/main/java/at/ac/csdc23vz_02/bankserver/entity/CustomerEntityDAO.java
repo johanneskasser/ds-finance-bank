@@ -12,8 +12,7 @@ public class CustomerEntityDAO {
     }
 
     public List<CustomerEntity> findByUsername(String userName) {
-        List<CustomerEntity> customers = entityManager.createQuery("SELECT p from CustomerEntity p where p.userName LIKE :userName", CustomerEntity.class)
+        return entityManager.createQuery("SELECT p from CustomerEntity p where p.userName LIKE :userName", CustomerEntity.class)
                 .setParameter("userName", userName).getResultList();
-        return customers;
     }
 }

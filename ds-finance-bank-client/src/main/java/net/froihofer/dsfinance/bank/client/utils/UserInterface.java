@@ -1,18 +1,15 @@
 package net.froihofer.dsfinance.bank.client.utils;
 
-import at.ac.csdc23vz_02.common.BankServer;
-import at.ac.csdc23vz_02.common.Customer;
-import at.ac.csdc23vz_02.common.Employee;
-import at.ac.csdc23vz_02.common.Stock;
+import at.ac.csdc23vz_02.common.*;
 import at.ac.csdc23vz_02.common.exceptions.BankServerException;
 
-import javax.annotation.security.RolesAllowed;
 import java.util.*;
 
 public class UserInterface {
 
     private BankServer bankServer;
     private final Scanner in = new Scanner(System.in);
+    private UserType userType = UserType.CUSTOMER;
 
     public UserInterface() {
     }
@@ -28,9 +25,9 @@ public class UserInterface {
     public void init(BankServer bankServer, List<String> credentials) throws BankServerException {
         this.bankServer = bankServer;
         if(login(credentials)) {
-            showMainMenu(UserType.CUSTOMER);
+            setModuleHeadline("====== WELCOME ======");
+            showMainMenu();
         }
-        setModuleHeadline("====== WELCOME ======");
     }
 
 
@@ -40,43 +37,21 @@ public class UserInterface {
         setModuleHeadline("Register");
         int output = showMenu(Arrays.asList("Customer", "Employee"));
         if(output == 1) {
-            customer.setFirstName(showInputElement("First Name"));
-            customer.setLastName(showInputElement("Last Name"));
-            customer.setUserName(showInputElement("Username"));
-            String pwFirst = showInputElement("Password");
-            String pwSecond = showInputElement("Repeat Password");
-            while(!pwFirst.equals(pwSecond)) {
-                showResponseMessage("Passwords do not match!", MessageType.ERROR);
-                pwFirst = showInputElement("Password");
-                pwSecond = showInputElement("Repeat Password");
-            }
-            customer.setPassword(pwFirst);
-
+            customer.setPerson(inputPerson());
             try {
                 bankServer.createCustomer(customer);
                 showResponseMessage("User Created.", MessageType.SUCCESS);
-                showMainMenu(UserType.EMPLOYEE);
+                showMainMenu();
             } catch (BankServerException e) {
                 showResponseMessage("Something went wrong while trying to create Customer. Please see Stack Trace.", MessageType.ERROR);
                 e.printStackTrace();
             }
         } else {
-            employee.setFirstName(showInputElement("First Name"));
-            employee.setLastName(showInputElement("Last Name"));
-            employee.setUserName(showInputElement("Username"));
-            String pwFirst = showInputElement("Password");
-            String pwSecond = showInputElement("Repeat Password");
-            while(!pwFirst.equals(pwSecond)) {
-                showResponseMessage("Passwords do not match!", MessageType.ERROR);
-                pwFirst = showInputElement("Password");
-                pwSecond = showInputElement("Repeat Password");
-            }
-            employee.setPassword(pwFirst);
-
+            employee.setPerson(inputPerson());
             try {
                 bankServer.createEmployee(employee);
                 showResponseMessage("User Created.", MessageType.SUCCESS);
-                showMainMenu(UserType.EMPLOYEE);
+                showMainMenu();
             } catch (BankServerException e) {
                 showResponseMessage("Something went wrong while trying to create Customer. Please see Stack Trace.", MessageType.ERROR);
                 e.printStackTrace();
@@ -86,13 +61,23 @@ public class UserInterface {
 
     private boolean login(List<String> credentials){
         try {
-            if (bankServer.login(credentials)) {
+            int response = bankServer.login(credentials);
+            if (response == 1) {
+                //CUSTOMER_SUCCESS
+                this.userType = UserType.CUSTOMER;
                 showResponseMessage("Successful Login!", MessageType.SUCCESS);
-                //TODO: Go To Main Menu corresponding to the employee/customer
-                showMainMenu(UserType.CUSTOMER);
+                showMainMenu();
                 return true;
-            } else {
+            } else if (response == 2){
+                //EMPLOYEE_SUCCESS
+                this.userType = UserType.EMPLOYEE;
+                showResponseMessage("Successful Login!", MessageType.SUCCESS);
+                showMainMenu();
+                return true;
+            } else if (response == 3) {
+                //LOGIN_FAILURE
                 showResponseMessage("Wrong Password or Username!", MessageType.ERROR);
+                return false;
             }
         } catch (BankServerException bankServerException) {
             showResponseMessage("User does not exist!", MessageType.ERROR);
@@ -100,9 +85,9 @@ public class UserInterface {
         return false;
     }
 
-    private void showMainMenu(UserType userType) throws BankServerException {
+    private void showMainMenu() throws BankServerException {
 
-        if(userType == UserType.CUSTOMER) {
+        if(this.userType == UserType.CUSTOMER) {
             //User is customer
             setModuleHeadline("=== Main Menu for Customers ===");
             int output = showMenu(Arrays.asList("Search available share",
@@ -110,7 +95,8 @@ public class UserInterface {
                     "Sell Share",
                     "Show Depot",
                     "Manage personal Data",
-                    "Logout"));
+                    "Logout"
+                    ));
             switch (output) {
                 case 1: searchAvailableShare(); break;
                 case 2: buyShare(); break;
@@ -119,7 +105,7 @@ public class UserInterface {
                 case 5: managePersonalData(); break;
                 case 6: logout(); break;
             }
-        } else if(userType == UserType.EMPLOYEE){
+        } else if(this.userType == UserType.EMPLOYEE){
             //TODO: User is Employee
             setModuleHeadline("=== Main Menu for Employees ===");
             int output = showMenu(Arrays.asList(
@@ -268,9 +254,25 @@ public class UserInterface {
         if(output == 1) {
             searchAvailableShare();
         } else if (output == 2) {
-            showMainMenu(UserType.CUSTOMER);
+            showMainMenu();
         } else if (output == 3) {
         }
+    }
+
+    private Person inputPerson() {
+        Person person = new Person();
+        person.setFirstName(showInputElement("First Name"));
+        person.setLastName(showInputElement("Last Name"));
+        person.setUserName(showInputElement("Username"));
+        String pwFirst = showInputElement("Password");
+        String pwSecond = showInputElement("Repeat Password");
+        while(!pwFirst.equals(pwSecond)) {
+            showResponseMessage("Passwords do not match!", MessageType.ERROR);
+            pwFirst = showInputElement("Password");
+            pwSecond = showInputElement("Repeat Password");
+        }
+        person.setPassword(pwFirst);
+        return person;
     }
 
 }

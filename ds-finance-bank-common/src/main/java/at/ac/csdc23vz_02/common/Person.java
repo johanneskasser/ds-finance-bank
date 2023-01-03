@@ -2,7 +2,7 @@ package at.ac.csdc23vz_02.common;
 
 import java.io.Serializable;
 
-public abstract class Person implements Serializable {
+public class Person implements Serializable {
 
     private static final long serialVersionUID = -558553967080513790L;
 

@@ -13,4 +13,15 @@ public class Customer extends Person implements Serializable {
     public Customer(String firstName, String lastName, String userName, String password) {
         super(firstName, lastName, userName, password);
     }
+
+    public Customer(Person person) {
+        super(person.getFirstName(), person.getLastName(), person.getUserName(), person.getPassword());
+    }
+
+    public void setPerson(Person person) {
+        setUserName(person.getUserName());
+        setFirstName(person.getFirstName());
+        setLastName(person.getLastName());
+        setPassword(person.getPassword());
+    }
 }

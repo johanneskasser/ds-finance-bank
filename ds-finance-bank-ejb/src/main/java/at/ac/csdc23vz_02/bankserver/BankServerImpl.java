@@ -2,6 +2,9 @@ package at.ac.csdc23vz_02.bankserver;
 
 import at.ac.csdc23vz_02.bankserver.entity.CustomerEntity;
 import at.ac.csdc23vz_02.bankserver.entity.CustomerEntityDAO;
+import at.ac.csdc23vz_02.bankserver.entity.EmployeeEntity;
+import at.ac.csdc23vz_02.bankserver.entity.EmployeeEntityDAO;
+import at.ac.csdc23vz_02.bankserver.util.LoginType;
 import at.ac.csdc23vz_02.common.*;
 import at.ac.csdc23vz_02.common.exceptions.*;
 import net.froihofer.dsfinance.ws.trading.PublicStockQuote;
@@ -27,9 +30,10 @@ import java.util.List;
 @PermitAll
 public class BankServerImpl implements BankServer {
     private static final Logger log = LoggerFactory.getLogger(BankServerImpl.class);
-    private WildflyAuthDBHelper wildflyAuthDBHelper;
+    private final WildflyAuthDBHelper wildflyAuthDBHelper = new WildflyAuthDBHelper();
 
     @Inject CustomerEntityDAO customerEntityDAO;
+    @Inject EmployeeEntityDAO employeeEntityDAO;
     @Resource private SessionContext sessionContext;
 
     TradingWebService tradingWebService;
@@ -42,7 +46,7 @@ public class BankServerImpl implements BankServer {
      * @param customer Customer Object to add
      * @throws BankServerException When User is already in Database or if Adding to wildfly Database did not work
      */
-    @RolesAllowed({"employee"})
+    @RolesAllowed({"customer"})
     public void createCustomer(Customer customer) throws BankServerException {
         CustomerEntity customerEntity = new CustomerEntity(customer);
         customerEntityDAO.persist(customerEntity);
@@ -53,18 +57,48 @@ public class BankServerImpl implements BankServer {
         }
     }
 
-    @RolesAllowed({"employee"})
+    /**
+     * Persists Employee to Database and adds the user simultaneously to the Wildfly Auth Database
+     * @param employee Employee Object to add
+     * @throws BankServerException When User is already in Database or if Adding to wildfly Database did not work
+     */
+    @RolesAllowed({"customer"})
     public void createEmployee(Employee employee) throws BankServerException {
-        //TODO
+        System.out.println(employee.toString());
+        EmployeeEntity employeeEntity = new EmployeeEntity(employee);
+        employeeEntityDAO.persist(employeeEntity);
+        try {
+            wildflyAuthDBHelper.addUser(employee.getUserName(), employee.getPassword(), new String[]{"employee"});
+        } catch (IOException ioException) {
+            throw new BankServerException("Error when creating User at Wildfly Server" + ioException, BankServerExceptionType.SESSION_FAULT);
+        }
     }
 
     @RolesAllowed({"employee", "customer"})
-    public boolean login(List<String> credentials) throws BankServerException {
+    public int login(List<String> credentials) throws BankServerException {
         List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(credentials.get(0));
-        if(customerEntity.isEmpty()){
+        List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(credentials.get(0));
+        if(customerEntity.isEmpty() && employeeEntities.isEmpty()){
+            //User  does not exist in DB
             throw new BankServerException("No Such User!", BankServerExceptionType.SESSION_FAULT);
+        } else if(customerEntity.isEmpty()) {
+            //User is an en Employee
+            for(EmployeeEntity employee : employeeEntities) {
+                if(employee.getPwHash().equals(credentials.get(1))) {
+                    return LoginType.EMPLOYEE_SUCCESS.getCode();
+                }
+                return LoginType.LOGIN_FAILURE.getCode();
+            }
+        } else if(employeeEntities.isEmpty()) {
+            //User is a Customer
+            for(CustomerEntity customer : customerEntity) {
+                if(customer.getPwHash().equals(credentials.get(1))) {
+                    return LoginType.CUSTOMER_SUCCESS.getCode();
+                }
+                return LoginType.LOGIN_FAILURE.getCode();
+            }
         }
-        return customerEntity.get(0).getPwHash().equals(credentials.get(1));
+        return LoginType.LOGIN_FAILURE.getCode();
     }
 
 
