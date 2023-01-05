@@ -154,7 +154,6 @@ public class BankServerImpl implements BankServer {
 
     @RolesAllowed({"employee"})
     public Boolean buy_for_customer(String share, int customer_id, int shares) {
-
         buy_stock(share,customer_id,shares);
         return null;
     }
@@ -166,12 +165,41 @@ public class BankServerImpl implements BankServer {
 
     @RolesAllowed({"employee"})
     public Customer search_customer_with_id(int customer_id) {
-        return null;
+        List<CustomerEntity> customerEntities = customerEntityDAO.findbyID(customer_id);
+        if(customerEntities.isEmpty()) {
+            Customer customer = new Customer();
+            customer.setId(0);
+            return customer;
+        } else {
+            return new Customer(
+                    customerEntities.get(0).getID(),
+                    customerEntities.get(0).getFirstName(),
+                    customerEntities.get(0).getLastName(),
+                    customerEntities.get(0).getUserName()
+                    );
+        }
     }
 
     @RolesAllowed({"employee"})
-    public Customer search_customer_with_name(String first_name, String last_name) {
-        return null;
+    public List<Customer> search_customer_with_name(String first_name, String last_name) {
+        List<Customer> customers = new ArrayList<>();
+        List<CustomerEntity> customerEntities = customerEntityDAO.findByName(first_name, last_name);
+        if(customerEntities.isEmpty()) {
+            Customer customer = new Customer();
+            customer.setId(0);
+            customers.add(customer);
+            return customers;
+        } else {
+            for(CustomerEntity customer : customerEntities) {
+                customers.add(new Customer(
+                        customer.getID(),
+                        customer.getFirstName(),
+                        customer.getLastName(),
+                        customer.getUserName()
+                ));
+            }
+            return customers;
+        }
     }
 
     @RolesAllowed({"employee", "customer"})

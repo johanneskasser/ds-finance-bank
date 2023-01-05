@@ -143,7 +143,41 @@ public class UserInterface {
     private void buyShareforCustomer() {
     }
 
-    private void searchCustomer() {
+    private void searchCustomer() throws BankServerException {
+        setModuleHeadline("Search Customer");
+        int output = showMenu(Arrays.asList(
+                "Search by ID",
+                "Search by Name"
+        ));
+        if(output == 1) {
+            showResponseMessage("Only enter Integer Numbers!", MessageType.INFO);
+            int id = Integer.parseInt(showInputElement("ID"));
+            Customer customer = bankServer.search_customer_with_id(id);
+            if(customer.getId() == 0) {
+                showResponseMessage("No User Found!", MessageType.ERROR);
+            } else {
+                showResponseMessage("Customer found.", MessageType.SUCCESS);
+                Person person = new Person(customer.getFirstName(), customer.getLastName(), customer.getUserName(), null);
+                person.setId(customer.getId());
+                showUserData(person);
+            }
+        } else {
+            showResponseMessage("Please enter the Name", MessageType.INFO);
+            String firstname = showInputElement("First Name");
+            String lastname = showInputElement("Last Name");
+            List<Customer> customers = bankServer.search_customer_with_name(firstname, lastname);
+            if(customers.get(0).getId() == 0) {
+                showResponseMessage("No User Found!", MessageType.ERROR);
+            } else {
+                showResponseMessage("Customers Found!", MessageType.SUCCESS);
+                for (Customer customer : customers) {
+                    Person person = new Person(customer.getFirstName(), customer.getLastName(), customer.getUserName(), null);
+                    person.setId(customer.getId());
+                    showUserData(person);
+                }
+            }
+        }
+        endOfModuleChoices();
     }
 
     private void logout() throws BankServerException {
@@ -263,6 +297,9 @@ public class UserInterface {
         System.out.println("First Name: " + MessageType.INFO.getCode() + person.getFirstName() + MessageType.RESET.getCode());
         System.out.println("Last Name:  " + MessageType.INFO.getCode() + person.getLastName() + MessageType.RESET.getCode());
         System.out.println("Username:   " + MessageType.INFO.getCode() + person.getUserName() + MessageType.RESET.getCode());
+        if(!(person.getId() == 0)) {
+            System.out.println("ID:   " + MessageType.INFO.getCode() + person.getId() + MessageType.RESET.getCode());
+        }
     }
 
     private String showInputElement(String description) {

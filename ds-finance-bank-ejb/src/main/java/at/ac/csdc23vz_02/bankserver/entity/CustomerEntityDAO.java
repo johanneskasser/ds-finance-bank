@@ -25,4 +25,17 @@ public class CustomerEntityDAO {
                 .setParameter("username", person.getUserName())
                 .executeUpdate();
     }
+
+    public List<CustomerEntity> findbyID(int id) {
+        return entityManager.createQuery("select p from CustomerEntity p where p.ID = :id", CustomerEntity.class)
+                .setParameter("id", id)
+                .getResultList();
+    }
+
+    public List<CustomerEntity> findByName(String firstname, String lastname) {
+        return entityManager.createQuery("SELECT p from CustomerEntity p where p.firstName LIKE :firstname AND p.lastName LIKE :lastname", CustomerEntity.class)
+                .setParameter("firstname", firstname)
+                .setParameter("lastname", lastname)
+                .getResultList();
+    }
 }

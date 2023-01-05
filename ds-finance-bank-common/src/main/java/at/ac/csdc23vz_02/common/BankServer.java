@@ -36,5 +36,5 @@ public interface BankServer {
 
     Customer search_customer_with_id(int customer_id);
 
-    Customer search_customer_with_name(String first_name, String last_name);
+    List<Customer> search_customer_with_name(String first_name, String last_name);
 }
