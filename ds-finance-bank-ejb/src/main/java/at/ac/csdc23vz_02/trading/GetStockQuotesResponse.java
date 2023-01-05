@@ -1,5 +1,5 @@
 
-package net.froihofer.dsfinance.ws.trading;
+package at.ac.csdc23vz_02.trading;
 
 import java.util.ArrayList;
 import java.util.List;

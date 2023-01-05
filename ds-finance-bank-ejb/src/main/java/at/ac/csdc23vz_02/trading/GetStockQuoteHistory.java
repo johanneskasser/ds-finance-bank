@@ -1,5 +1,5 @@
 
-package net.froihofer.dsfinance.ws.trading;
+package at.ac.csdc23vz_02.trading;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,16 +8,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für findStockQuotesByCompanyName complex type.
+ * <p>Java-Klasse für getStockQuoteHistory complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="findStockQuotesByCompanyName"&gt;
+ * &lt;complexType name="getStockQuoteHistory"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="partOfCompanyName" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="symbol" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -27,36 +27,36 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "findStockQuotesByCompanyName", propOrder = {
-    "partOfCompanyName"
+@XmlType(name = "getStockQuoteHistory", propOrder = {
+    "symbol"
 })
-public class FindStockQuotesByCompanyName {
+public class GetStockQuoteHistory {
 
     @XmlElement(required = true)
-    protected String partOfCompanyName;
+    protected String symbol;
 
     /**
-     * Ruft den Wert der partOfCompanyName-Eigenschaft ab.
+     * Ruft den Wert der symbol-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getPartOfCompanyName() {
-        return partOfCompanyName;
+    public String getSymbol() {
+        return symbol;
     }
 
     /**
-     * Legt den Wert der partOfCompanyName-Eigenschaft fest.
+     * Legt den Wert der symbol-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setPartOfCompanyName(String value) {
-        this.partOfCompanyName = value;
+    public void setSymbol(String value) {
+        this.symbol = value;
     }
 
 }

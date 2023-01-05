@@ -1,4 +1,4 @@
-package net.froihofer.dsfinance.ws.trading;
+package at.ac.csdc23vz_02.trading;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -24,8 +24,8 @@ public interface TradingWebService {
      * Buys shares and returns the price per share effective for the buying transaction.
      */
     @WebMethod
-    @RequestWrapper(localName = "buy", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.Buy")
-    @ResponseWrapper(localName = "buyResponse", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.BuyResponse")
+    @RequestWrapper(localName = "buy", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "at.ac.csdc23vz_02.trading.Buy")
+    @ResponseWrapper(localName = "buyResponse", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "at.ac.csdc23vz_02.trading.BuyResponse")
     @WebResult(name = "return", targetNamespace = "")
     public java.math.BigDecimal buy(
 
@@ -39,10 +39,10 @@ public interface TradingWebService {
      * Returns a list of the first 100 stock quotes where the company name contains the string specified in the 'partOfCompanyName' parameter
      */
     @WebMethod
-    @RequestWrapper(localName = "findStockQuotesByCompanyName", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.FindStockQuotesByCompanyName")
-    @ResponseWrapper(localName = "findStockQuotesByCompanyNameResponse", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.FindStockQuotesByCompanyNameResponse")
+    @RequestWrapper(localName = "findStockQuotesByCompanyName", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "at.ac.csdc23vz_02.trading.FindStockQuotesByCompanyName")
+    @ResponseWrapper(localName = "findStockQuotesByCompanyNameResponse", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "at.ac.csdc23vz_02.trading.FindStockQuotesByCompanyNameResponse")
     @WebResult(name = "return", targetNamespace = "")
-    public java.util.List<net.froihofer.dsfinance.ws.trading.PublicStockQuote> findStockQuotesByCompanyName(
+    public java.util.List<PublicStockQuote> findStockQuotesByCompanyName(
 
         @WebParam(name = "partOfCompanyName", targetNamespace = "")
         java.lang.String partOfCompanyName
@@ -52,8 +52,8 @@ public interface TradingWebService {
      * Sells shares and returns the price per share effective for the selling transaction.
      */
     @WebMethod
-    @RequestWrapper(localName = "sell", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.Sell")
-    @ResponseWrapper(localName = "sellResponse", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.SellResponse")
+    @RequestWrapper(localName = "sell", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "at.ac.csdc23vz_02.trading.Sell")
+    @ResponseWrapper(localName = "sellResponse", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "at.ac.csdc23vz_02.trading.SellResponse")
     @WebResult(name = "return", targetNamespace = "")
     public java.math.BigDecimal sell(
 
@@ -67,10 +67,10 @@ public interface TradingWebService {
      * Returns the stock quotes for the stock options identified by the 'symbols' parameter.
      */
     @WebMethod
-    @RequestWrapper(localName = "getStockQuotes", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.GetStockQuotes")
-    @ResponseWrapper(localName = "getStockQuotesResponse", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.GetStockQuotesResponse")
+    @RequestWrapper(localName = "getStockQuotes", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "at.ac.csdc23vz_02.trading.GetStockQuotes")
+    @ResponseWrapper(localName = "getStockQuotesResponse", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "at.ac.csdc23vz_02.trading.GetStockQuotesResponse")
     @WebResult(name = "return", targetNamespace = "")
-    public java.util.List<net.froihofer.dsfinance.ws.trading.PublicStockQuote> getStockQuotes(
+    public java.util.List<PublicStockQuote> getStockQuotes(
 
         @WebParam(name = "symbols", targetNamespace = "")
         java.util.List<java.lang.String> symbols
@@ -80,10 +80,10 @@ public interface TradingWebService {
      * Returns a list of historical stock quotes, limited to a few months in the past.
      */
     @WebMethod
-    @RequestWrapper(localName = "getStockQuoteHistory", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.GetStockQuoteHistory")
-    @ResponseWrapper(localName = "getStockQuoteHistoryResponse", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "net.froihofer.dsfinance.ws.trading.GetStockQuoteHistoryResponse")
+    @RequestWrapper(localName = "getStockQuoteHistory", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "at.ac.csdc23vz_02.trading.GetStockQuoteHistory")
+    @ResponseWrapper(localName = "getStockQuoteHistoryResponse", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/", className = "at.ac.csdc23vz_02.trading.GetStockQuoteHistoryResponse")
     @WebResult(name = "return", targetNamespace = "")
-    public java.util.List<net.froihofer.dsfinance.ws.trading.PublicStockQuote> getStockQuoteHistory(
+    public java.util.List<PublicStockQuote> getStockQuoteHistory(
 
         @WebParam(name = "symbol", targetNamespace = "")
         java.lang.String symbol

@@ -1,5 +1,5 @@
 
-package net.froihofer.dsfinance.ws.trading;
+package at.ac.csdc23vz_02.trading;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,12 +10,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für findStockQuotesByCompanyNameResponse complex type.
+ * <p>Java-Klasse für getStockQuoteHistoryResponse complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="findStockQuotesByCompanyNameResponse"&gt;
+ * &lt;complexType name="getStockQuoteHistoryResponse"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
@@ -29,10 +29,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "findStockQuotesByCompanyNameResponse", propOrder = {
+@XmlType(name = "getStockQuoteHistoryResponse", propOrder = {
     "_return"
 })
-public class FindStockQuotesByCompanyNameResponse {
+public class GetStockQuoteHistoryResponse {
 
     @XmlElement(name = "return")
     protected List<PublicStockQuote> _return;

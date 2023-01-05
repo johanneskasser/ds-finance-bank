@@ -1,5 +1,5 @@
 
-package net.froihofer.dsfinance.ws.trading;
+package at.ac.csdc23vz_02.trading;
 
 import javax.xml.ws.WebFault;
 
@@ -13,7 +13,7 @@ import javax.xml.ws.WebFault;
 @WebFault(name = "TradingWSException", targetNamespace = "http://trading.ws.dsfinance.froihofer.net/")
 public class TradingWSException_Exception extends Exception {
 
-    private net.froihofer.dsfinance.ws.trading.TradingWSException faultInfo;
+    private TradingWSException faultInfo;
 
     public TradingWSException_Exception() {
         super();
@@ -27,17 +27,17 @@ public class TradingWSException_Exception extends Exception {
         super(message, cause);
     }
 
-    public TradingWSException_Exception(String message, net.froihofer.dsfinance.ws.trading.TradingWSException tradingWSException) {
+    public TradingWSException_Exception(String message, TradingWSException tradingWSException) {
         super(message);
         this.faultInfo = tradingWSException;
     }
 
-    public TradingWSException_Exception(String message, net.froihofer.dsfinance.ws.trading.TradingWSException tradingWSException, java.lang.Throwable cause) {
+    public TradingWSException_Exception(String message, TradingWSException tradingWSException, java.lang.Throwable cause) {
         super(message, cause);
         this.faultInfo = tradingWSException;
     }
 
-    public net.froihofer.dsfinance.ws.trading.TradingWSException getFaultInfo() {
+    public TradingWSException getFaultInfo() {
         return this.faultInfo;
     }
 }

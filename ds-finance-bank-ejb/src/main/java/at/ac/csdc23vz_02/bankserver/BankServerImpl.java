@@ -7,9 +7,9 @@ import at.ac.csdc23vz_02.bankserver.entity.EmployeeEntityDAO;
 import at.ac.csdc23vz_02.bankserver.util.LoginType;
 import at.ac.csdc23vz_02.common.*;
 import at.ac.csdc23vz_02.common.exceptions.*;
-import net.froihofer.dsfinance.ws.trading.PublicStockQuote;
-import net.froihofer.dsfinance.ws.trading.TradingWebService;
-import net.froihofer.dsfinance.ws.trading.TradingWebServiceService;
+import at.ac.csdc23vz_02.trading.PublicStockQuote;
+import at.ac.csdc23vz_02.trading.TradingWebService;
+import at.ac.csdc23vz_02.trading.TradingWebServiceService;
 import net.froihofer.util.jboss.WildflyAuthDBHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +23,7 @@ import javax.inject.Inject;
 import javax.xml.ws.BindingProvider;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @Stateless(name="BankServer")
@@ -118,7 +116,7 @@ public class BankServerImpl implements BankServer {
 
             List<PublicStockQuote> stockinfo = tradingWebService.findStockQuotesByCompanyName(stockname);
             for(PublicStockQuote var: stockinfo){
-                stock.add(new Stock(var));
+                stock.add(new Stock(var.getCompanyName(),var.getLastTradePrice().doubleValue(),var.getLastTradeTime().toGregorianCalendar().getTime(),var.getMarketCapitalization(),var.getStockExchange(),var.getSymbol()));
             }
 
         } catch (Exception e) {
