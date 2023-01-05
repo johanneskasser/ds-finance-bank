@@ -200,6 +200,7 @@ public class BankServerImpl implements BankServer {
     public void updateUser(Person person) throws BankServerException {
         List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(person.getUserName());
         List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(person.getUserName());
+        System.out.println(person.getFirstName() + person.getLastName());
         if(customerEntity.isEmpty() && !employeeEntities.isEmpty()) {
             employeeEntityDAO.updateUserByUsername(person);
         } else if(!customerEntity.isEmpty() && employeeEntities.isEmpty()) {

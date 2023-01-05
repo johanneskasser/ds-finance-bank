@@ -35,12 +35,6 @@ public class CustomerEntity implements Serializable {
         this.pwHash = customer.getPassword();
     }
 
-    public CustomerEntity(Person person) {
-        this.firstName = person.getFirstName();
-        this.userName = person.getUserName();
-        this.lastName = person.getLastName();
-    }
-
     public CustomerEntity() {
 
     }

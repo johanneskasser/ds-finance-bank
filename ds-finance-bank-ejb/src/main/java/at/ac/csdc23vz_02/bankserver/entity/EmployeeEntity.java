@@ -38,13 +38,6 @@ public class EmployeeEntity implements Serializable {
         this.pwHash = employee.getPassword();
     }
 
-    public EmployeeEntity(Person person) {
-        this.firstName = person.getFirstName();
-        this.userName = person.getUserName();
-        this.lastName = person.getLastName();
-        this.pwHash = null;
-    }
-
     public Integer getID() {
         return ID;
     }

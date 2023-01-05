@@ -328,7 +328,7 @@ public class UserInterface {
     private boolean checkIfInputWasCorrect() {
         showResponseMessage("Is this input correct?", MessageType.INFO);
         String output = showInputElement("Y/N");
-        return output.equals(output.toUpperCase());
+        return output.equalsIgnoreCase("Y");
     }
 
 }

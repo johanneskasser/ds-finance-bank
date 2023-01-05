@@ -1,6 +1,5 @@
 package at.ac.csdc23vz_02.bankserver.entity;
 
-import at.ac.csdc23vz_02.common.Customer;
 import at.ac.csdc23vz_02.common.Person;
 
 import javax.persistence.EntityManager;
@@ -20,7 +19,10 @@ public class CustomerEntityDAO {
     }
 
     public void updateUserByUsername(Person person) {
-        CustomerEntity customer = new CustomerEntity(person);
-        entityManager.merge(customer);
+        entityManager.createQuery("UPDATE CustomerEntity c SET c.firstName = :firstname, c.lastName = :lastname where c.userName like :username")
+                .setParameter("firstname", person.getFirstName())
+                .setParameter("lastname", person.getLastName())
+                .setParameter("username", person.getUserName())
+                .executeUpdate();
     }
 }
