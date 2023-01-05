@@ -3,6 +3,8 @@ package net.froihofer.dsfinance.bank.client.utils;
 import at.ac.csdc23vz_02.common.*;
 import at.ac.csdc23vz_02.common.exceptions.BankServerException;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 public class UserInterface {
@@ -137,10 +139,34 @@ public class UserInterface {
     private void showDepotForCustomer() {
     }
 
-    private void sellShareforCustomer() {
+    private void sellShareforCustomer() throws BankServerException{
+        setModuleHeadline("Sell a Stock");
+        String input = showInputElement("Name a Stock to be sold");
+        int input1 = Integer.parseInt(showInputElement("Name a User by ID"));
+        int input2 = Integer.parseInt(showInputElement("Name the Amount of Stocks to be sold"));
+
+        BigDecimal success = bankServer.sell_for_customer(input,input1,input2);
+
+        if(success.intValue()>=0) {
+            showResponseMessage("Stock was sold for " + input2 + " x " + success.intValue(), MessageType.SUCCESS);
+        } else {
+            showResponseMessage("Stock wasn't sold", MessageType.ERROR);
+        }
     }
 
-    private void buyShareforCustomer() {
+    private void buyShareforCustomer() throws BankServerException {
+        setModuleHeadline("Buy a Stock");
+        String input = showInputElement("Name a Stock to be bought");
+        int input1 = Integer.parseInt(showInputElement("Name a User by ID"));
+        int input2 = Integer.parseInt(showInputElement("Name the Amount of Stocks to be bought"));
+
+        BigDecimal success = bankServer.buy_for_customer(input,input1,input2);
+
+        if(success.intValue()>=0) {
+            showResponseMessage("Stock was bought for " + input2 + " x " + success.intValue(), MessageType.SUCCESS);
+        } else {
+            showResponseMessage("Stock wasn't bought", MessageType.ERROR);
+        }
     }
 
     private void searchCustomer() throws BankServerException {

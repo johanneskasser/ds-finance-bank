@@ -22,6 +22,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.xml.ws.BindingProvider;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,15 +127,53 @@ public class BankServerImpl implements BankServer {
     }
 
 
-    Boolean buy_stock(String share, int customer_id, int shares) {
-        return true;
+    BigDecimal sell_stock(String share, int customer_id, int shares) throws BankServerException {
+        String user = "csdc23vz_02";
+        String password = "DuTahkei2";
+        try {
+            tradingWebServiceService = new TradingWebServiceService();
+            tradingWebService = tradingWebServiceService.getTradingWebServicePort();
+            bindingprovider = (BindingProvider)tradingWebService;
+
+            bindingprovider.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, user);
+            bindingprovider.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
+
+            BigDecimal a = tradingWebService.sell(share,shares);
+            return a;
+
+        } catch (Exception e) {
+            throw new BankServerException("Failed to sell Stocks!", BankServerExceptionType.WEBSERVICE_FAULT);
+        }
+
+
+    }
+
+    BigDecimal buy_stock(String share, int customer_id, int shares) throws BankServerException {
+        String user = "csdc23vz_02";
+        String password = "DuTahkei2";
+        try {
+            tradingWebServiceService = new TradingWebServiceService();
+            tradingWebService = tradingWebServiceService.getTradingWebServicePort();
+            bindingprovider = (BindingProvider)tradingWebService;
+
+            bindingprovider.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, user);
+            bindingprovider.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
+
+            BigDecimal a = tradingWebService.buy(share,shares);
+            return a;
+
+        } catch (Exception e) {
+            throw new BankServerException("Failed to buy Stocks!", BankServerExceptionType.WEBSERVICE_FAULT);
+        }
+
+
     }
 
     @RolesAllowed({"customer"})
-    public Boolean buy(String share, int shares) {
+    public BigDecimal buy(String share, int shares) throws BankServerException {
         int currentuserid = 5;
-        buy_stock(share,currentuserid,shares);
-        return null;
+        BigDecimal a = buy_stock(share,currentuserid,shares);
+        return a;
     }
 
     @RolesAllowed({"customer"})
@@ -153,14 +192,13 @@ public class BankServerImpl implements BankServer {
     }
 
     @RolesAllowed({"employee"})
-    public Boolean buy_for_customer(String share, int customer_id, int shares) {
-        buy_stock(share,customer_id,shares);
-        return null;
+    public BigDecimal buy_for_customer(String share, int customer_id, int shares) throws BankServerException {
+        return buy_stock(share,customer_id,shares);
     }
 
     @RolesAllowed({"employee"})
-    public Boolean sell_for_customer(String share, int customer_id, int shares) {
-        return null;
+    public BigDecimal sell_for_customer(String share, int customer_id, int shares) throws BankServerException {
+        return sell_stock(share,customer_id,shares);
     }
 
     @RolesAllowed({"employee"})

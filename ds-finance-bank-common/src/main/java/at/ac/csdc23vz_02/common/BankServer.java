@@ -3,6 +3,7 @@ package at.ac.csdc23vz_02.common;
 import at.ac.csdc23vz_02.common.exceptions.BankServerException;
 
 import javax.ejb.Remote;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public interface BankServer {
 
     List<Stock> listStock(String stockname) throws BankServerException;
 
-    Boolean buy(String share, int shares);
+    BigDecimal buy(String share, int shares) throws BankServerException;
 
     Boolean sell(String share, int shares);
 
@@ -30,9 +31,9 @@ public interface BankServer {
 
     String listDepot(int customer_id);
 
-    Boolean buy_for_customer(String share, int customer_id, int shares);
+    BigDecimal buy_for_customer(String share, int customer_id, int shares) throws BankServerException;
 
-    Boolean sell_for_customer(String share, int customer_id, int shares);
+    BigDecimal sell_for_customer(String share, int customer_id, int shares) throws BankServerException;
 
     Customer search_customer_with_id(int customer_id);
 
