@@ -4,6 +4,7 @@ import at.ac.csdc23vz_02.common.exceptions.BankServerException;
 
 import javax.ejb.Remote;
 import java.util.List;
+import java.util.Map;
 
 /**
  * at.ac.csdc23vz_02.common.BankServer Method declaration Interface
@@ -16,6 +17,7 @@ public interface BankServer {
     void createCustomer(Customer customer) throws BankServerException;
     void createEmployee(Employee employee) throws BankServerException;
     int login(List<String> credentials) throws BankServerException;
+    Person getLoggedInUser() throws BankServerException;
 
     List<Stock> listStock(String stockname) throws BankServerException;
 

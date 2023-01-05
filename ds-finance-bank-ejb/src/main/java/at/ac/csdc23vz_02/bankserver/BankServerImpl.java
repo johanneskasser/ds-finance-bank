@@ -23,7 +23,9 @@ import javax.inject.Inject;
 import javax.xml.ws.BindingProvider;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Stateless(name="BankServer")
@@ -64,7 +66,6 @@ public class BankServerImpl implements BankServer {
      */
     @RolesAllowed({"customer"})
     public void createEmployee(Employee employee) throws BankServerException {
-        System.out.println(employee.toString());
         EmployeeEntity employeeEntity = new EmployeeEntity(employee);
         employeeEntityDAO.persist(employeeEntity);
         try {
@@ -174,4 +175,27 @@ public class BankServerImpl implements BankServer {
     public Customer search_customer_with_name(String first_name, String last_name) {
         return null;
     }
+
+    @RolesAllowed({"employee", "customer"})
+    public Person getLoggedInUser() throws BankServerException {
+        String username = sessionContext.getCallerPrincipal().getName();
+        List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(username);
+        List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(username);
+        if(customerEntity.isEmpty() && !employeeEntities.isEmpty()) {
+            return new Person(
+                    employeeEntities.get(0).getFirstName(),
+                    employeeEntities.get(0).getLastName(),
+                    employeeEntities.get(0).getUserName(),
+                    null);
+        } else if(!customerEntity.isEmpty() && employeeEntities.isEmpty()) {
+            return new Person(
+                    customerEntity.get(0).getFirstName(),
+                    customerEntity.get(0).getLastName(),
+                    customerEntity.get(0).getUserName(),
+                    null);
+        } else {
+            throw new BankServerException("User which is logged in could not be found in Database!", BankServerExceptionType.SESSION_FAULT);
+        }
+    }
+
 }

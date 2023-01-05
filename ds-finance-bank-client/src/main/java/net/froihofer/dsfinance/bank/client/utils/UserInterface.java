@@ -10,6 +10,7 @@ public class UserInterface {
     private BankServer bankServer;
     private final Scanner in = new Scanner(System.in);
     private UserType userType = UserType.CUSTOMER;
+    private Person loggedInUser;
 
     public UserInterface() {
     }
@@ -65,12 +66,14 @@ public class UserInterface {
             if (response == 1) {
                 //CUSTOMER_SUCCESS
                 this.userType = UserType.CUSTOMER;
+                this.loggedInUser = bankServer.getLoggedInUser();
                 showResponseMessage("Successful Login!", MessageType.SUCCESS);
                 showMainMenu();
                 return true;
             } else if (response == 2){
                 //EMPLOYEE_SUCCESS
                 this.userType = UserType.EMPLOYEE;
+                this.loggedInUser = bankServer.getLoggedInUser();
                 showResponseMessage("Successful Login!", MessageType.SUCCESS);
                 showMainMenu();
                 return true;
