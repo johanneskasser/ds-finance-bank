@@ -16,6 +16,7 @@ public class UserInterface {
 
     public List<String> startLogin() {
         List<String> credentials = new ArrayList<>();
+        setModuleHeadline("====== WELCOME ======");
         setModuleHeadline("Login");
         credentials.add(showInputElement("Username"));
         credentials.add(showInputElement("Password"));
@@ -25,7 +26,6 @@ public class UserInterface {
     public void init(BankServer bankServer, List<String> credentials) throws BankServerException {
         this.bankServer = bankServer;
         if(login(credentials)) {
-            setModuleHeadline("====== WELCOME ======");
             showMainMenu();
         }
     }

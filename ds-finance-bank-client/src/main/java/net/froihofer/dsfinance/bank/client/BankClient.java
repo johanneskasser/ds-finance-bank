@@ -45,7 +45,6 @@ public class BankClient {
   }
 
   private void run() throws BankServerException {
-    //TODO implement the client part
     UserInterface userInterface = new UserInterface();
     List<String> credentials = userInterface.startLogin();
     while(!getRmiProxy(credentials.get(0), credentials.get(1))) {
