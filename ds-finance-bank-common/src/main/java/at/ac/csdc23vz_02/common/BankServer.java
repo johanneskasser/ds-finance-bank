@@ -18,6 +18,7 @@ public interface BankServer {
     void createEmployee(Employee employee) throws BankServerException;
     int login(List<String> credentials) throws BankServerException;
     Person getLoggedInUser() throws BankServerException;
+    void updateUser(Person person) throws BankServerException;
 
     List<Stock> listStock(String stockname) throws BankServerException;
 

@@ -198,4 +198,17 @@ public class BankServerImpl implements BankServer {
         }
     }
 
+    @RolesAllowed({"employee", "customer"})
+    public void updateUser(Person person) throws BankServerException {
+        List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(person.getUserName());
+        List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(person.getUserName());
+        if(customerEntity.isEmpty() && !employeeEntities.isEmpty()) {
+            employeeEntityDAO.updateUserByUsername(person);
+        } else if(!customerEntity.isEmpty() && employeeEntities.isEmpty()) {
+            customerEntityDAO.updateUserByUsername(person);
+        } else {
+            throw new BankServerException("User which is logged in could not be found in Database!", BankServerExceptionType.SESSION_FAULT);
+        }
+    }
+
 }

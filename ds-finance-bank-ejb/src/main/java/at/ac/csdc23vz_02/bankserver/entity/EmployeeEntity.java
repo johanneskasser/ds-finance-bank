@@ -1,6 +1,7 @@
 package at.ac.csdc23vz_02.bankserver.entity;
 
 import at.ac.csdc23vz_02.common.Employee;
+import at.ac.csdc23vz_02.common.Person;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -35,6 +36,13 @@ public class EmployeeEntity implements Serializable {
         this.userName = employee.getUserName();
         this.lastName = employee.getLastName();
         this.pwHash = employee.getPassword();
+    }
+
+    public EmployeeEntity(Person person) {
+        this.firstName = person.getFirstName();
+        this.userName = person.getUserName();
+        this.lastName = person.getLastName();
+        this.pwHash = null;
     }
 
     public Integer getID() {

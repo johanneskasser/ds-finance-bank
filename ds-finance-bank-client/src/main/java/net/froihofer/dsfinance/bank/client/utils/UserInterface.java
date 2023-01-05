@@ -155,7 +155,48 @@ public class UserInterface {
     private void managePersonalData() throws BankServerException {
         setModuleHeadline("Manage Personal Data");
         showUserData(this.loggedInUser);
+        showResponseMessage("Available Options", MessageType.INFO);
+        int output = showMenu(Arrays.asList(
+                "Update Personal Information",
+                "Set new Password"
+        ));
+        switch (output) {
+            case 1: updatePersonalInformation(); break;
+            case 2: resetPassword(); break;
+        }
         endOfModuleChoices();
+    }
+
+    private void resetPassword() {
+    }
+
+    private void updatePersonalInformation() throws BankServerException {
+        showResponseMessage("Update Personal Information", MessageType.INFO);
+        int output = showMenu(Arrays.asList(
+                "Update First Name",
+                "Update Last Name"
+        ));
+        if(output == 1) {
+            //Update First Name
+            showResponseMessage("Change Last Name", MessageType.INFO);
+            String newFirstName = showInputElement("New first Name");
+            while(!checkIfInputWasCorrect()) {
+                showResponseMessage("Change Last Name", MessageType.INFO);
+                newFirstName = showInputElement("New first Name");
+            }
+            this.loggedInUser.setFirstName(newFirstName);
+            bankServer.updateUser(this.loggedInUser);
+        } else if(output == 2) {
+            //Update Last Name
+            showResponseMessage("Change Last Name", MessageType.INFO);
+            String newLastName = showInputElement("New last Name");
+            while(!checkIfInputWasCorrect()) {
+                showResponseMessage("Change Last Name", MessageType.INFO);
+                newLastName = showInputElement("New last Name");
+            }
+            this.loggedInUser.setLastName(newLastName);
+            bankServer.updateUser(this.loggedInUser);
+        }
     }
 
     private void showDepot() throws BankServerException {
@@ -282,6 +323,12 @@ public class UserInterface {
         }
         person.setPassword(pwFirst);
         return person;
+    }
+
+    private boolean checkIfInputWasCorrect() {
+        showResponseMessage("Is this input correct?", MessageType.INFO);
+        String output = showInputElement("Y/N");
+        return output.equals(output.toUpperCase());
     }
 
 }

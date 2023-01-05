@@ -1,5 +1,8 @@
 package at.ac.csdc23vz_02.bankserver.entity;
 
+import at.ac.csdc23vz_02.common.Customer;
+import at.ac.csdc23vz_02.common.Person;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
@@ -14,5 +17,10 @@ public class CustomerEntityDAO {
     public List<CustomerEntity> findByUsername(String userName) {
         return entityManager.createQuery("SELECT p from CustomerEntity p where p.userName LIKE :userName", CustomerEntity.class)
                 .setParameter("userName", userName).getResultList();
+    }
+
+    public void updateUserByUsername(Person person) {
+        CustomerEntity customer = new CustomerEntity(person);
+        entityManager.merge(customer);
     }
 }
