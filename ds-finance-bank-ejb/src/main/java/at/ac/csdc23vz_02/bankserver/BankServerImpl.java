@@ -48,7 +48,7 @@ public class BankServerImpl implements BankServer {
      * @param customer Customer Object to add
      * @throws BankServerException When User is already in Database or if Adding to wildfly Database did not work
      */
-    @RolesAllowed({"customer"})
+    @RolesAllowed({"employee"})
     public void createCustomer(Customer customer) throws BankServerException {
         CustomerEntity customerEntity = new CustomerEntity(customer);
         customerEntityDAO.persist(customerEntity);
@@ -64,7 +64,7 @@ public class BankServerImpl implements BankServer {
      * @param employee Employee Object to add
      * @throws BankServerException When User is already in Database or if Adding to wildfly Database did not work
      */
-    @RolesAllowed({"customer"})
+    @RolesAllowed({"employee"})
     public void createEmployee(Employee employee) throws BankServerException {
         EmployeeEntity employeeEntity = new EmployeeEntity(employee);
         employeeEntityDAO.persist(employeeEntity);
