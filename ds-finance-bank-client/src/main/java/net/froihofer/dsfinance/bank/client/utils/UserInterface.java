@@ -154,7 +154,7 @@ public class UserInterface {
 
     private void managePersonalData() throws BankServerException {
         setModuleHeadline("Manage Personal Data");
-        showResponseMessage("Not implemented yet!", MessageType.ERROR);
+        showUserData(this.loggedInUser);
         endOfModuleChoices();
     }
 
@@ -216,6 +216,12 @@ public class UserInterface {
             System.out.println(count + ") " + "\n" + stockElement.toString());
             count++;
         }
+    }
+
+    private void showUserData(Person person) {
+        System.out.println("First Name: " + MessageType.INFO.getCode() + person.getFirstName() + MessageType.RESET.getCode());
+        System.out.println("Last Name:  " + MessageType.INFO.getCode() + person.getLastName() + MessageType.RESET.getCode());
+        System.out.println("Username:   " + MessageType.INFO.getCode() + person.getUserName() + MessageType.RESET.getCode());
     }
 
     private String showInputElement(String description) {
