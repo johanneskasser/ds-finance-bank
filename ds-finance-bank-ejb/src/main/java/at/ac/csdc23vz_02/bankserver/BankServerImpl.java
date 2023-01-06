@@ -32,14 +32,30 @@ import java.util.List;
 public class BankServerImpl implements BankServer {
     private static final Logger log = LoggerFactory.getLogger(BankServerImpl.class);
     private final WildflyAuthDBHelper wildflyAuthDBHelper = new WildflyAuthDBHelper();
+    private final TradingWebService tradingWebService;
 
     @Inject CustomerEntityDAO customerEntityDAO;
     @Inject EmployeeEntityDAO employeeEntityDAO;
     @Resource private SessionContext sessionContext;
 
-    TradingWebService tradingWebService;
-    TradingWebServiceService tradingWebServiceService;
-    BindingProvider bindingprovider;
+    public BankServerImpl() throws BankServerException {
+        this.tradingWebService = initTradingService();
+    }
+
+    private TradingWebService initTradingService() throws BankServerException {
+        try {
+            TradingWebServiceService tradingWebServiceService = new TradingWebServiceService();
+            TradingWebService tradingWebService = tradingWebServiceService.getTradingWebServicePort();
+            BindingProvider bindingprovider = (BindingProvider)tradingWebService;
+
+            bindingprovider.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, "csdc23vz_02");
+            bindingprovider.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, "DuTahkei2");
+
+            return tradingWebService;
+        } catch (Exception e) {
+            throw new BankServerException("Failed to sell Stocks!", BankServerExceptionType.WEBSERVICE_FAULT);
+        }
+    }
 
 
     /**
@@ -104,17 +120,8 @@ public class BankServerImpl implements BankServer {
 
     @RolesAllowed({"employee", "customer"})
     public List<Stock> listStock(String stockname)  throws BankServerException{
-        String user = "csdc23vz_02";
-        String password = "DuTahkei2";
         List<Stock> stock = new ArrayList<>();
         try {
-            tradingWebServiceService = new TradingWebServiceService();
-            tradingWebService = tradingWebServiceService.getTradingWebServicePort();
-            bindingprovider = (BindingProvider)tradingWebService;
-
-            bindingprovider.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, user);
-            bindingprovider.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
-
             List<PublicStockQuote> stockinfo = tradingWebService.findStockQuotesByCompanyName(stockname);
             for(PublicStockQuote var: stockinfo){
                 stock.add(new Stock(var.getCompanyName(),var.getLastTradePrice().doubleValue(),var.getLastTradeTime().toGregorianCalendar().getTime(),var.getMarketCapitalization(),var.getStockExchange(),var.getSymbol()));
@@ -128,16 +135,7 @@ public class BankServerImpl implements BankServer {
 
 
     BigDecimal sell_stock(String share, int customer_id, int shares) throws BankServerException {
-        String user = "csdc23vz_02";
-        String password = "DuTahkei2";
         try {
-            tradingWebServiceService = new TradingWebServiceService();
-            tradingWebService = tradingWebServiceService.getTradingWebServicePort();
-            bindingprovider = (BindingProvider)tradingWebService;
-
-            bindingprovider.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, user);
-            bindingprovider.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
-
             BigDecimal a = tradingWebService.sell(share,shares);
             return a;
 
@@ -149,16 +147,7 @@ public class BankServerImpl implements BankServer {
     }
 
     BigDecimal buy_stock(String share, int customer_id, int shares) throws BankServerException {
-        String user = "csdc23vz_02";
-        String password = "DuTahkei2";
         try {
-            tradingWebServiceService = new TradingWebServiceService();
-            tradingWebService = tradingWebServiceService.getTradingWebServicePort();
-            bindingprovider = (BindingProvider)tradingWebService;
-
-            bindingprovider.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, user);
-            bindingprovider.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
-
             BigDecimal a = tradingWebService.buy(share,shares);
             return a;
 
@@ -226,7 +215,6 @@ public class BankServerImpl implements BankServer {
             Customer customer = new Customer();
             customer.setId(0);
             customers.add(customer);
-            return customers;
         } else {
             for(CustomerEntity customer : customerEntities) {
                 customers.add(new Customer(
@@ -236,8 +224,8 @@ public class BankServerImpl implements BankServer {
                         customer.getUserName()
                 ));
             }
-            return customers;
         }
+        return customers;
     }
 
     @RolesAllowed({"employee", "customer"})
