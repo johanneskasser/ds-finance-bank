@@ -138,30 +138,57 @@ public class UserInterface {
     private void showDepotForCustomer() throws BankServerException {
         setModuleHeadline("Show Depot for Customer");
         int id = Integer.parseInt(showInputElement("ID of Customer"));
+        printDepot(id);
+        endOfModuleChoices();
+    }
+
+    private List<Transaction> printDepot(int id) {
         Customer customer = bankServer.search_customer_with_id(id);
+        List<Transaction> transactions = new ArrayList<>();
         if(!(customer.getId() == 0)) {
             showResponseMessage("Depot for " + customer.getFullName() + ":", MessageType.INFO);
-            List<Transaction> transactionList = bankServer.listDepot(id);
-            showTransactionsList(transactionList);
+            transactions = bankServer.listDepot(id);
+            showTransactionsList(transactions);
+            return transactions;
         } else {
             showResponseMessage("User was not found!", MessageType.ERROR);
         }
-        endOfModuleChoices();
+        return transactions;
     }
 
     private void sellShareforCustomer() throws BankServerException{
         setModuleHeadline("Sell Share for Customer");
-        String input = showInputElement("Share Symbol");
-        int input1 = Integer.parseInt(showInputElement("User ID"));
-        int input2 = Integer.parseInt(showInputElement("Amount"));
+        int id = Integer.parseInt(showInputElement("ID of Customer"));
+        List<Transaction> transactions = printDepot(id);
+        int transactionID = Integer.parseInt(showInputElement("Input ID of Share you want to sell"));
+        int sharesToSell = Integer.parseInt(showInputElement("Amount of shares you want to sell"));
+        int finalTransactionID = transactionID;
+        Transaction transaction = transactions.stream()
+                .filter(transaction1 -> transaction1.getID() == finalTransactionID)
+                .findAny()
+                .orElse(null);
+        while (transaction == null) {
+            showResponseMessage("No Transaction with the following ID found!", MessageType.ERROR);
+            transactionID = Integer.parseInt(showInputElement("Input ID of Share you want to sell"));
+            int finalTransactionID1 = transactionID;
+            transaction = transactions.stream()
+                    .filter(transaction1 -> finalTransactionID1 == transaction1.getID())
+                    .findAny()
+                    .orElse(null);
+        }
 
-        BigDecimal success = bankServer.sell_for_customer(input,input1,input2);
+        while (transaction.getShareCount() < sharesToSell) {
+            showResponseMessage("You can only sell as much shares as you own.", MessageType.ERROR);
+            sharesToSell = Integer.parseInt(showInputElement("Amount of shares you want to sell"));
+        }
+        BigDecimal success = bankServer.sell_for_customer(transaction.getStocksymbol() , id, sharesToSell, transactionID);
 
         if(success.intValue()>=0) {
-            showResponseMessage("Sold share for " + input2 + " x " + success.intValue(), MessageType.SUCCESS);
+            showResponseMessage("Sold share for " + sharesToSell + " x €" + success.intValue(), MessageType.SUCCESS);
         } else {
             showResponseMessage("Failed to sell share", MessageType.ERROR);
         }
+        printDepot(id);
         endOfModuleChoices();
     }
 
@@ -174,7 +201,7 @@ public class UserInterface {
         BigDecimal success = bankServer.buy_for_customer(input,input1,input2);
 
         if(success.intValue()>=0) {
-            showResponseMessage("Bought Share for " + input2 + " x " + success.intValue(), MessageType.SUCCESS);
+            showResponseMessage("Bought Share for " + input2 + " x €" + success.intValue(), MessageType.SUCCESS);
         } else {
             showResponseMessage("Failed to buy share", MessageType.ERROR);
         }
@@ -283,16 +310,41 @@ public class UserInterface {
 
     private void sellShare() throws BankServerException {
         setModuleHeadline("Sell Share");
-        String input = showInputElement("Share Symbol");
-        int input2 = Integer.parseInt(showInputElement("Amount"));
+        showResponseMessage("Depot for " + loggedInUser.getFullName() + ":", MessageType.INFO);
+        List<Transaction> transactionList = bankServer.listDepot();
+        showTransactionsList(transactionList);
+        int transactionID = Integer.parseInt(showInputElement("Input ID of Share you want to sell"));
+        int sharesToSell = Integer.parseInt(showInputElement("Amount of shares you want to sell"));
+        int finalTransactionID = transactionID;
+        Transaction transaction = transactionList.stream()
+                .filter(transaction1 -> transaction1.getID() == finalTransactionID)
+                .findAny()
+                .orElse(null);
+        while (transaction == null) {
+            showResponseMessage("No Transaction with the following ID found!", MessageType.ERROR);
+            transactionID = Integer.parseInt(showInputElement("Input ID of Share you want to sell"));
+            int finalTransactionID1 = transactionID;
+            transaction = transactionList.stream()
+                    .filter(transaction1 -> finalTransactionID1 == transaction1.getID())
+                    .findAny()
+                    .orElse(null);
+        }
 
-        BigDecimal success = bankServer.sell(input,input2);
+        while (transaction.getShareCount() < sharesToSell) {
+            showResponseMessage("You can only sell as much shares as you own.", MessageType.ERROR);
+            sharesToSell = Integer.parseInt(showInputElement("Amount of shares you want to sell"));
+        }
+        BigDecimal success = bankServer.sell(transaction.getStocksymbol(), sharesToSell, transactionID);
 
         if(success.intValue()>=0) {
-            showResponseMessage("Sold share for " + input2 + " x " + success.intValue(), MessageType.SUCCESS);
+            showResponseMessage("Sold share for " + sharesToSell + " x €" + success.intValue(), MessageType.SUCCESS);
         } else {
             showResponseMessage("Failed to sell share", MessageType.ERROR);
         }
+
+        transactionList = bankServer.listDepot();
+        showTransactionsList(transactionList);
+
         endOfModuleChoices();
     }
 
@@ -354,7 +406,7 @@ public class UserInterface {
         System.out.println("Last Name:  " + MessageType.INFO.getCode() + person.getLastName() + MessageType.RESET.getCode());
         System.out.println("Username:   " + MessageType.INFO.getCode() + person.getUserName() + MessageType.RESET.getCode());
         if(!(person.getId() == null) && (person.getId() == 0)) {
-            System.out.println("ID:   " + MessageType.INFO.getCode() + person.getId() + MessageType.RESET.getCode());
+            System.out.println("ID:        " + MessageType.INFO.getCode() + person.getId() + MessageType.RESET.getCode());
         }
     }
 
@@ -426,11 +478,18 @@ public class UserInterface {
 
     private void showTransactionsList(List<Transaction> transactionList) {
         int count = 1;
+        BigDecimal totalSum = BigDecimal.valueOf(0);
         if(!transactionList.isEmpty()) {
             for (Transaction transaction : transactionList) {
-                showResponseMessage(count + ") " + transaction.getCompanyName() +  " - " +
-                        transaction.getStocksymbol() + " - €" + transaction.getBuyPrice() + " - ID: " + transaction.getID(), MessageType.RESET);
+                totalSum = totalSum.add((transaction.getBuyPrice() == null) ? BigDecimal.valueOf(0) : transaction.getBuyPrice());
+                showResponseMessage(count + ") "
+                        + transaction.getCompanyName()
+                        +  " - " + transaction.getStocksymbol()
+                        + " - €" + ((transaction.getBuyPrice() == null) ? "NaN" : transaction.getBuyPrice().toString())
+                        + " - # of owned Shares: " + transaction.getShareCount()
+                        + " - ID: " + transaction.getID() , MessageType.RESET);
             }
+            showResponseMessage("=========================================\nTotal Amount of owned assets: €" + totalSum, MessageType.INFO);
         } else {
             showResponseMessage("No bought Stocks found!", MessageType.ERROR);
         }

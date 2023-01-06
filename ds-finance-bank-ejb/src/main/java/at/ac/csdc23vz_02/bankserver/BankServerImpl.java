@@ -154,13 +154,21 @@ public class BankServerImpl implements BankServer {
     }
 
 
-    BigDecimal sell_stock(String share, int customer_id, int shares) throws BankServerException {
+    BigDecimal sell_stock(String share, int customer_id, int shares, int transactionID) throws BankServerException {
         try {
             BigDecimal a = tradingWebService.sell(share,shares);
+            if(a.intValue() >= 0) {
+                List<TransactionEntity> transactionEntities = transactionEntityDAO.getTransactionsByID(customer_id);
+                if(!(transactionEntities.isEmpty())) {
+                    if(transactionEntityDAO.sellTransaction(transactionID, shares)) {
+                        return a;
+                    }
+                }
+            }
             return a;
 
         } catch (Exception e) {
-            throw new BankServerException("Failed to sell Stocks!", BankServerExceptionType.TRANSACTION_FAULT);
+            throw new BankServerException(e.getMessage(), BankServerExceptionType.TRANSACTION_FAULT);
         }
 
 
@@ -198,9 +206,9 @@ public class BankServerImpl implements BankServer {
     }
 
     @RolesAllowed({"customer"})
-    public BigDecimal sell(String share, int shares) throws BankServerException{
+    public BigDecimal sell(String share, int shares, int transactionID) throws BankServerException{
         this.loggedInUser = getLoggedInUser();
-        return sell_stock(share, loggedInUser.getId(), shares);
+        return sell_stock(share, loggedInUser.getId(), shares, transactionID);
     }
 
     @RolesAllowed({"customer"})
@@ -248,8 +256,8 @@ public class BankServerImpl implements BankServer {
     }
 
     @RolesAllowed({"employee"})
-    public BigDecimal sell_for_customer(String share, int customer_id, int shares) throws BankServerException {
-        return sell_stock(share,customer_id,shares);
+    public BigDecimal sell_for_customer(String share, int customer_id, int shares, int transactionID) throws BankServerException {
+        return sell_stock(share,customer_id,shares, transactionID);
     }
 
     @RolesAllowed({"employee"})
