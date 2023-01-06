@@ -2,7 +2,9 @@ package at.ac.csdc23vz_02.common.exceptions;
 
 public enum BankServerExceptionType {
     SESSION_FAULT(1, "Session Fault"),
-    WEBSERVICE_FAULT(2, "Webservice Fault");
+    WEBSERVICE_FAULT(2, "Webservice Fault"),
+    DATABASE_FAULT(3, "Database Fault"),
+    TRANSACTION_FAULT(4, "Transaction Fault");
 
 
     private final Integer code;

@@ -85,7 +85,7 @@ public class UserInterface {
                 return false;
             }
         } catch (BankServerException bankServerException) {
-            showResponseMessage("User does not exist!", MessageType.ERROR);
+            showResponseMessage(bankServerException.getMessage(), MessageType.ERROR);
         }
         return false;
     }
@@ -155,10 +155,10 @@ public class UserInterface {
     }
 
     private void buyShareforCustomer() throws BankServerException {
-        setModuleHeadline("Buy a Stock");
-        String input = showInputElement("Name a Stock to be bought");
-        int input1 = Integer.parseInt(showInputElement("Name a User by ID"));
-        int input2 = Integer.parseInt(showInputElement("Name the Amount of Stocks to be bought"));
+        setModuleHeadline("Buy Stocks");
+        String input = showInputElement("Name of Stock");
+        int input1 = Integer.parseInt(showInputElement("User ID"));
+        int input2 = Integer.parseInt(showInputElement("Amount"));
 
         BigDecimal success = bankServer.buy_for_customer(input,input1,input2);
 
