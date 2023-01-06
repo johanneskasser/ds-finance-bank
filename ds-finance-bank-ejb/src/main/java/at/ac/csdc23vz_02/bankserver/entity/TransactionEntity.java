@@ -4,6 +4,8 @@ import at.ac.csdc23vz_02.common.Stock;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 
 @Entity
@@ -30,6 +32,9 @@ public class TransactionEntity implements Serializable {
     @Column(name = "TradeTime")
     private Date tradeTime;
 
+    @Column(name = "BuyPrice")
+    private BigDecimal buyPrice;
+
     public TransactionEntity(Integer customerID, String stockSymbol, String companyName, Integer shareCount, Date tradeTime, String tradeType) {
         this.customerID = customerID;
         this.stockSymbol = stockSymbol;
@@ -48,6 +53,14 @@ public class TransactionEntity implements Serializable {
         this.companyName = stock.getCompanyName();
         this.shareCount = shareCount;
         this.tradeTime = stock.getLastTradeTime();
+    }
+
+    public BigDecimal getBuyPrice() {
+        return buyPrice;
+    }
+
+    public void setBuyPrice(BigDecimal buyPrice) {
+        this.buyPrice = buyPrice;
     }
 
     public Integer getID() {

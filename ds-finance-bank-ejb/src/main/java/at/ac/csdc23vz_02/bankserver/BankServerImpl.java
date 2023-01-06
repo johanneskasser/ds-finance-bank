@@ -160,7 +160,7 @@ public class BankServerImpl implements BankServer {
             return a;
 
         } catch (Exception e) {
-            throw new BankServerException("Failed to sell Stocks!", BankServerExceptionType.WEBSERVICE_FAULT);
+            throw new BankServerException("Failed to sell Stocks!", BankServerExceptionType.TRANSACTION_FAULT);
         }
 
 
@@ -173,7 +173,9 @@ public class BankServerImpl implements BankServer {
                 List<Stock> stockList = findStockBySymbol(List.of(share));
                 if(!stockList.isEmpty()) {
                     if(!(stockList.size() > 1)) {
-                        transactionEntityDAO.persist(new TransactionEntity(stockList.get(0), customer, shares));
+                        TransactionEntity transactionEntity = new TransactionEntity(stockList.get(0), customer, shares);
+                        transactionEntity.setBuyPrice(a);
+                        transactionEntityDAO.persist(transactionEntity);
                     } else {
                         throw new BankServerException("Symbol of Stock is not unique!", BankServerExceptionType.TRANSACTION_FAULT);
                     }
@@ -191,25 +193,42 @@ public class BankServerImpl implements BankServer {
 
     @RolesAllowed({"customer"})
     public BigDecimal buy(String share, int shares) throws BankServerException {
-        BigDecimal a;
         this.loggedInUser = getLoggedInUser();
-        a = buy_stock(share, new CustomerEntity(new Customer(this.loggedInUser)), shares);
-        return a;
+        return buy_stock(share, new CustomerEntity(new Customer(this.loggedInUser)), shares);
     }
 
     @RolesAllowed({"customer"})
-    public Boolean sell(String share, int shares) {
-        return null;
+    public BigDecimal sell(String share, int shares) throws BankServerException{
+        this.loggedInUser = getLoggedInUser();
+        return sell_stock(share, loggedInUser.getId(), shares);
     }
 
     @RolesAllowed({"customer"})
-    public String listDepot() {
-        return null;
+    public List<Transaction> listDepot() throws BankServerException {
+        loggedInUser = getLoggedInUser();
+        return listDepotInternal(loggedInUser.getId());
     }
 
     @RolesAllowed({"employee"})
-    public String listDepot(int customer_id) {
-        return null;
+    public List<Transaction> listDepot(int customer_id) {
+        return listDepotInternal(customer_id);
+    }
+
+    private List<Transaction> listDepotInternal(int customerID) {
+        List<TransactionEntity> transactionEntities = transactionEntityDAO.getTransactionsByID(customerID);
+        List<Transaction> transactions = new ArrayList<>();
+        for(TransactionEntity transactionEntity : transactionEntities) {
+            transactions.add(new Transaction(
+                    transactionEntity.getID(),
+                    transactionEntity.getCustomerID(),
+                    transactionEntity.getStockSymbol(),
+                    transactionEntity.getCompanyName(),
+                    transactionEntity.getShareCount(),
+                    transactionEntity.getTradeTime(),
+                    transactionEntity.getBuyPrice()
+            ));
+        }
+        return transactions;
     }
 
     @RolesAllowed({"employee"})
@@ -218,8 +237,6 @@ public class BankServerImpl implements BankServer {
         List<CustomerEntity> customerEntities = customerEntityDAO.findbyID(customer_id);
         if(!customerEntities.isEmpty()) {
             if(!(customerEntities.size() > 1)) {
-                System.out.println("Name: " + customerEntities.get(0).getUserName());
-                System.out.println("ID: " + customerEntities.get(0).getID());
                 a = buy_stock(share, customerEntities.get(0), shares);
                 return a;
             } else {
@@ -280,12 +297,14 @@ public class BankServerImpl implements BankServer {
         List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(username);
         if(customerEntity.isEmpty() && !employeeEntities.isEmpty()) {
             return new Person(
+                    employeeEntities.get(0).getID(),
                     employeeEntities.get(0).getFirstName(),
                     employeeEntities.get(0).getLastName(),
                     employeeEntities.get(0).getUserName(),
                     null);
         } else if(!customerEntity.isEmpty() && employeeEntities.isEmpty()) {
             return new Person(
+                    customerEntity.get(0).getID(),
                     customerEntity.get(0).getFirstName(),
                     customerEntity.get(0).getLastName(),
                     customerEntity.get(0).getUserName(),
@@ -299,7 +318,6 @@ public class BankServerImpl implements BankServer {
     public void updateUser(Person person) throws BankServerException {
         List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(person.getUserName());
         List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(person.getUserName());
-        System.out.println(person.getFirstName() + person.getLastName());
         if(customerEntity.isEmpty() && !employeeEntities.isEmpty()) {
             employeeEntityDAO.updateUserByUsername(person);
         } else if(!customerEntity.isEmpty() && employeeEntities.isEmpty()) {

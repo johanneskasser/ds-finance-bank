@@ -15,7 +15,8 @@ public class EmployeeEntityDAO {
 
     public List<EmployeeEntity> findByUsername(String userName) {
         return entityManager.createQuery("SELECT p from EmployeeEntity p where p.userName like :userName", EmployeeEntity.class)
-                .setParameter("userName", userName).getResultList();
+                .setParameter("userName", userName)
+                .getResultList();
     }
 
     public void updateUserByUsername(Person person) {

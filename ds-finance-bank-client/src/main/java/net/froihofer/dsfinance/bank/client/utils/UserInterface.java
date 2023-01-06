@@ -111,7 +111,6 @@ public class UserInterface {
                 case 6: logout(); break;
             }
         } else if(this.userType == UserType.EMPLOYEE){
-            //TODO: User is Employee
             setModuleHeadline("=== Main Menu for Employees ===");
             int output = showMenu(Arrays.asList(
                     "Create Customer or Employee",
@@ -136,37 +135,50 @@ public class UserInterface {
     private void showAvailableBudget() {
     }
 
-    private void showDepotForCustomer() {
+    private void showDepotForCustomer() throws BankServerException {
+        setModuleHeadline("Show Depot for Customer");
+        int id = Integer.parseInt(showInputElement("ID of Customer"));
+        Customer customer = bankServer.search_customer_with_id(id);
+        if(!(customer.getId() == 0)) {
+            showResponseMessage("Depot for " + customer.getFullName() + ":", MessageType.INFO);
+            List<Transaction> transactionList = bankServer.listDepot(id);
+            showTransactionsList(transactionList);
+        } else {
+            showResponseMessage("User was not found!", MessageType.ERROR);
+        }
+        endOfModuleChoices();
     }
 
     private void sellShareforCustomer() throws BankServerException{
-        setModuleHeadline("Sell a Stock");
-        String input = showInputElement("Name a Stock to be sold");
-        int input1 = Integer.parseInt(showInputElement("Name a User by ID"));
-        int input2 = Integer.parseInt(showInputElement("Name the Amount of Stocks to be sold"));
+        setModuleHeadline("Sell Share for Customer");
+        String input = showInputElement("Share Symbol");
+        int input1 = Integer.parseInt(showInputElement("User ID"));
+        int input2 = Integer.parseInt(showInputElement("Amount"));
 
         BigDecimal success = bankServer.sell_for_customer(input,input1,input2);
 
         if(success.intValue()>=0) {
-            showResponseMessage("Stock was sold for " + input2 + " x " + success.intValue(), MessageType.SUCCESS);
+            showResponseMessage("Sold share for " + input2 + " x " + success.intValue(), MessageType.SUCCESS);
         } else {
-            showResponseMessage("Stock wasn't sold", MessageType.ERROR);
+            showResponseMessage("Failed to sell share", MessageType.ERROR);
         }
+        endOfModuleChoices();
     }
 
     private void buyShareforCustomer() throws BankServerException {
-        setModuleHeadline("Buy Stocks");
-        String input = showInputElement("Name of Stock");
+        setModuleHeadline("Buy Share for Customer");
+        String input = showInputElement("Share Symbol");
         int input1 = Integer.parseInt(showInputElement("User ID"));
         int input2 = Integer.parseInt(showInputElement("Amount"));
 
         BigDecimal success = bankServer.buy_for_customer(input,input1,input2);
 
         if(success.intValue()>=0) {
-            showResponseMessage("Stock was bought for " + input2 + " x " + success.intValue(), MessageType.SUCCESS);
+            showResponseMessage("Bought Share for " + input2 + " x " + success.intValue(), MessageType.SUCCESS);
         } else {
-            showResponseMessage("Stock wasn't bought", MessageType.ERROR);
+            showResponseMessage("Failed to buy share", MessageType.ERROR);
         }
+        endOfModuleChoices();
     }
 
     private void searchCustomer() throws BankServerException {
@@ -218,11 +230,13 @@ public class UserInterface {
         showResponseMessage("Available Options", MessageType.INFO);
         int output = showMenu(Arrays.asList(
                 "Update Personal Information",
-                "Set new Password"
+                "Set new Password",
+                "Return to main menu"
         ));
         switch (output) {
             case 1: updatePersonalInformation(); break;
             case 2: resetPassword(); break;
+            case 3: showMainMenu(); break;
         }
         endOfModuleChoices();
     }
@@ -261,35 +275,51 @@ public class UserInterface {
 
     private void showDepot() throws BankServerException {
         setModuleHeadline("Show personal Depot");
-        showResponseMessage("Not implemented yet!", MessageType.ERROR);
+        showResponseMessage("Depot for " + loggedInUser.getFullName() + ":", MessageType.INFO);
+        List<Transaction> transactionList = bankServer.listDepot();
+        showTransactionsList(transactionList);
         endOfModuleChoices();
     }
 
     private void sellShare() throws BankServerException {
         setModuleHeadline("Sell Share");
-        showResponseMessage("Not implemented yet!", MessageType.ERROR);
+        String input = showInputElement("Share Symbol");
+        int input2 = Integer.parseInt(showInputElement("Amount"));
+
+        BigDecimal success = bankServer.sell(input,input2);
+
+        if(success.intValue()>=0) {
+            showResponseMessage("Sold share for " + input2 + " x " + success.intValue(), MessageType.SUCCESS);
+        } else {
+            showResponseMessage("Failed to sell share", MessageType.ERROR);
+        }
         endOfModuleChoices();
     }
 
     private void buyShare() throws BankServerException {
         setModuleHeadline("Buy Share");
-        showResponseMessage("Not implemented yet!", MessageType.ERROR);
+
+        String input = showInputElement("Symbol");
+        int input2 = Integer.parseInt(showInputElement("Amount"));
+
+        BigDecimal success = bankServer.buy(input,input2);
+
+        if(success.intValue()>=0) {
+            showResponseMessage("Bought Share for " + input2 + " x " + success.intValue(), MessageType.SUCCESS);
+        } else {
+            showResponseMessage("Failed to buy share", MessageType.ERROR);
+        }
         endOfModuleChoices();
     }
 
     private void searchAvailableShare() throws BankServerException {
         setModuleHeadline("Search for available Shares");
         String input = showInputElement("Name a Stock to be shown");
-        try {
-            List<Stock> output = bankServer.listStock(input);
-            if(output.isEmpty()) {
-                showResponseMessage("No Stocks found!", MessageType.INFO);
-            } else {
-                showListing(output);
-            }
-            endOfModuleChoices();
-        } catch (BankServerException bankServerException) {
-            showResponseMessage("Failed to read Stocks!", MessageType.ERROR);
+        List<Stock> output = bankServer.listStock(input);
+        if(output.isEmpty()) {
+            showResponseMessage("No Stocks found!", MessageType.INFO);
+        } else {
+            showListing(output);
         }
     }
 
@@ -323,7 +353,7 @@ public class UserInterface {
         System.out.println("First Name: " + MessageType.INFO.getCode() + person.getFirstName() + MessageType.RESET.getCode());
         System.out.println("Last Name:  " + MessageType.INFO.getCode() + person.getLastName() + MessageType.RESET.getCode());
         System.out.println("Username:   " + MessageType.INFO.getCode() + person.getUserName() + MessageType.RESET.getCode());
-        if(!(person.getId() == 0)) {
+        if(!(person.getId() == null) && (person.getId() == 0)) {
             System.out.println("ID:   " + MessageType.INFO.getCode() + person.getId() + MessageType.RESET.getCode());
         }
     }
@@ -392,6 +422,18 @@ public class UserInterface {
         showResponseMessage("Is this input correct?", MessageType.INFO);
         String output = showInputElement("Y/N");
         return output.equalsIgnoreCase("Y");
+    }
+
+    private void showTransactionsList(List<Transaction> transactionList) {
+        int count = 1;
+        if(!transactionList.isEmpty()) {
+            for (Transaction transaction : transactionList) {
+                showResponseMessage(count + ") " + transaction.getCompanyName() +  " - " +
+                        transaction.getStocksymbol() + " - €" + transaction.getBuyPrice() + " - ID: " + transaction.getID(), MessageType.RESET);
+            }
+        } else {
+            showResponseMessage("No bought Stocks found!", MessageType.ERROR);
+        }
     }
 
 }

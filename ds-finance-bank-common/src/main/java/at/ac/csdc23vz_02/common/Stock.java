@@ -2,6 +2,7 @@ package at.ac.csdc23vz_02.common;
 
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class Stock implements Serializable {
@@ -26,7 +27,6 @@ public class Stock implements Serializable {
 
     public Stock() {
     }
-
 
     public String getCompanyName() {
         return companyName;

@@ -25,11 +25,11 @@ public interface BankServer {
 
     BigDecimal buy(String share, int shares) throws BankServerException;
 
-    Boolean sell(String share, int shares);
+    BigDecimal sell(String share, int shares) throws BankServerException;
 
-    String listDepot();
+    List<Transaction> listDepot() throws BankServerException;
 
-    String listDepot(int customer_id);
+    List<Transaction> listDepot(int customer_id);
 
     BigDecimal buy_for_customer(String share, int customer_id, int shares) throws BankServerException;
 

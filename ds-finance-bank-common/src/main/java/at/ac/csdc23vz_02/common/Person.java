@@ -20,6 +20,14 @@ public class Person implements Serializable {
         this.password = password;
     }
 
+    public Person(int id, String firstName, String lastName, String userName, String password) {
+        this.id = id;
+        this.firstName = firstName;
+        this.userName = userName;
+        this.lastName = lastName;
+        this.password = password;
+    }
+
     public Person(){
     }
 
