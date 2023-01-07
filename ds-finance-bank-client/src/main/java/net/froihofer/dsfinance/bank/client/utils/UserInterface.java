@@ -120,8 +120,7 @@ public class UserInterface {
                     "Buy Share for Customer",
                     "Sell Share for Customer",
                     "Show Depot for Customer",
-                    "Show available Budget from Bank at the Stock Exchange",
-                    "Reset password"));
+                    "Show available Budget from Bank at the Stock Exchange"));
             switch (output) {
                 case 1: startRegisterProcess(); break;
                 case 2: searchCustomer(); break;
@@ -130,7 +129,6 @@ public class UserInterface {
                 case 5: sellShareforCustomer(); break;
                 case 6: showDepotForCustomer(); break;
                 case 7: showAvailableBudget(); break;
-                case 8: resetPassword();break;
             }
         }
     }
@@ -384,6 +382,7 @@ public class UserInterface {
         } else {
             showListing(output);
         }
+        endOfModuleChoices();
     }
 
     private Integer showMenu(List<String> menuChoices) {
