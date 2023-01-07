@@ -19,10 +19,11 @@ public class CustomerEntityDAO {
     }
 
     public void updateUserByUsername(Person person) {
-        entityManager.createQuery("UPDATE CustomerEntity c SET c.firstName = :firstname, c.lastName = :lastname where c.userName like :username")
+        entityManager.createQuery("UPDATE CustomerEntity c SET c.firstName = :firstname, c.lastName = :lastname, c.pwHash = :pwhash where c.userName like :username")
                 .setParameter("firstname", person.getFirstName())
                 .setParameter("lastname", person.getLastName())
                 .setParameter("username", person.getUserName())
+                .setParameter("pwhash", person.getPassword())
                 .executeUpdate();
     }
 

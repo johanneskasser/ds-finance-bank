@@ -323,7 +323,7 @@ public class BankServerImpl implements BankServer {
     }
 
     @RolesAllowed({"employee", "customer"})
-    public void updateUser(Person person) throws BankServerException {
+    public boolean updateUser(Person person) throws BankServerException {
         List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(person.getUserName());
         List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(person.getUserName());
         if(customerEntity.isEmpty() && !employeeEntities.isEmpty()) {
@@ -333,6 +333,8 @@ public class BankServerImpl implements BankServer {
         } else {
             throw new BankServerException("User which is logged in could not be found in Database!", BankServerExceptionType.SESSION_FAULT);
         }
+
+        return true;
     }
 
     private List<Stock> findStockBySymbol(List<String> symbols) throws TradingWSException_Exception {

@@ -269,7 +269,7 @@ public class UserInterface {
         endOfModuleChoices();
     }
 
-    private void resetPassword() {
+    private void resetPassword() throws BankServerException {
         String newPwFirst = showInputElement("new password");
         String newPwSecond = showInputElement("Repeat new password");
 
@@ -278,6 +278,16 @@ public class UserInterface {
             newPwFirst = showInputElement("new password");
             newPwSecond = showInputElement("Repeat new password");
         }
+
+        loggedInUser.setPassword(newPwSecond);
+
+        if(bankServer.updateUser(loggedInUser)) {
+            showResponseMessage("Password reseted", MessageType.SUCCESS);
+        }else {
+            showResponseMessage("Password not reseted - please try again", MessageType.ERROR);
+        }
+
+        endOfModuleChoices();
     }
 
     private void updatePersonalInformation() throws BankServerException {
