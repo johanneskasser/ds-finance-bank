@@ -2,6 +2,7 @@ package net.froihofer.dsfinance.bank.client.utils;
 
 import at.ac.csdc23vz_02.common.*;
 import at.ac.csdc23vz_02.common.exceptions.BankServerException;
+import net.froihofer.util.AuthCallbackHandler;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -119,7 +120,8 @@ public class UserInterface {
                     "Buy Share for Customer",
                     "Sell Share for Customer",
                     "Show Depot for Customer",
-                    "Show available Budget from Bank at the Stock Exchange"));
+                    "Show available Budget from Bank at the Stock Exchange",
+                    "Reset password"));
             switch (output) {
                 case 1: startRegisterProcess(); break;
                 case 2: searchCustomer(); break;
@@ -128,6 +130,7 @@ public class UserInterface {
                 case 5: sellShareforCustomer(); break;
                 case 6: showDepotForCustomer(); break;
                 case 7: showAvailableBudget(); break;
+                case 8: resetPassword();break;
             }
         }
     }
@@ -269,6 +272,14 @@ public class UserInterface {
     }
 
     private void resetPassword() {
+        String newPwFirst = showInputElement("new password");
+        String newPwSecond = showInputElement("Repeat new password");
+
+        while(!newPwFirst.equals(newPwSecond)) {
+            showResponseMessage("Passwords do not match!", MessageType.ERROR);
+            newPwFirst = showInputElement("new password");
+            newPwSecond = showInputElement("Repeat new password");
+        }
     }
 
     private void updatePersonalInformation() throws BankServerException {
