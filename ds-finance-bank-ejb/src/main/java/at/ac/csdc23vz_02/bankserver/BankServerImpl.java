@@ -219,14 +219,15 @@ public class BankServerImpl implements BankServer {
     }
 
     @RolesAllowed({"employee"})
-    public List<Transaction> listDepot(int customer_id) {
+    public List<Transaction> listDepot(int customer_id) throws BankServerException {
         return listDepotInternal(customer_id);
     }
 
-    private List<Transaction> listDepotInternal(int customerID) {
+    private List<Transaction> listDepotInternal(int customerID) throws BankServerException {
         List<TransactionEntity> transactionEntities = transactionEntityDAO.getTransactionsByID(customerID);
         List<Transaction> transactions = new ArrayList<>();
         for(TransactionEntity transactionEntity : transactionEntities) {
+            List<Stock> x = listStock(transactionEntity.getStockSymbol());
             transactions.add(new Transaction(
                     transactionEntity.getID(),
                     transactionEntity.getCustomerID(),
@@ -234,7 +235,7 @@ public class BankServerImpl implements BankServer {
                     transactionEntity.getCompanyName(),
                     transactionEntity.getShareCount(),
                     transactionEntity.getTradeTime(),
-                    transactionEntity.getBuyPrice()
+                    new BigDecimal(x.get(0).getLastTradePrice())
             ));
         }
         return transactions;

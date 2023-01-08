@@ -29,7 +29,7 @@ public interface BankServer {
 
     List<Transaction> listDepot() throws BankServerException;
 
-    List<Transaction> listDepot(int customer_id);
+    List<Transaction> listDepot(int customer_id) throws BankServerException;
 
     BigDecimal buy_for_customer(String share, int customer_id, int shares) throws BankServerException;
 
