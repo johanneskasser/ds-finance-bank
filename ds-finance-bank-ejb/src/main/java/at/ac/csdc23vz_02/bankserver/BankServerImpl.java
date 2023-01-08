@@ -19,6 +19,7 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -73,11 +74,16 @@ public class BankServerImpl implements BankServer {
     @RolesAllowed({"employee"})
     public void createCustomer(Customer customer) throws BankServerException {
         CustomerEntity customerEntity = new CustomerEntity(customer);
-        customerEntityDAO.persist(customerEntity);
-        try {
-            wildflyAuthDBHelper.addUser(customer.getUserName(), customer.getPassword(), new String[]{"customer"});
-        } catch (IOException ioException) {
-            throw new BankServerException("Error when creating User at Wildfly Server" + ioException, BankServerExceptionType.SESSION_FAULT);
+        List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(customer.getUserName());
+        if(employeeEntities.isEmpty()) {
+            customerEntityDAO.persist(customerEntity);
+            try {
+                wildflyAuthDBHelper.addUser(customer.getUserName(), customer.getPassword(), new String[]{"customer"});
+            } catch (IOException ioException) {
+                throw new BankServerException("Error when creating User at Wildfly Server" + ioException, BankServerExceptionType.SESSION_FAULT);
+            }
+        } else {
+            throw new BankServerException("User already exists!", BankServerExceptionType.DATABASE_FAULT);
         }
     }
 
@@ -89,11 +95,16 @@ public class BankServerImpl implements BankServer {
     @RolesAllowed({"employee"})
     public void createEmployee(Employee employee) throws BankServerException {
         EmployeeEntity employeeEntity = new EmployeeEntity(employee);
-        employeeEntityDAO.persist(employeeEntity);
-        try {
-            wildflyAuthDBHelper.addUser(employee.getUserName(), employee.getPassword(), new String[]{"employee"});
-        } catch (IOException ioException) {
-            throw new BankServerException("Error when creating User at Wildfly Server" + ioException, BankServerExceptionType.SESSION_FAULT);
+        List<CustomerEntity> customerEntities = customerEntityDAO.findByUsername(employee.getUserName());
+        if(customerEntities.isEmpty()) {
+            employeeEntityDAO.persist(employeeEntity);
+            try {
+                wildflyAuthDBHelper.addUser(employee.getUserName(), employee.getPassword(), new String[]{"employee"});
+            } catch (IOException ioException) {
+                throw new BankServerException("Error when creating User at Wildfly Server" + ioException, BankServerExceptionType.SESSION_FAULT);
+            }
+        } else {
+            throw new BankServerException("User already exists!", BankServerExceptionType.DATABASE_FAULT);
         }
     }
 
@@ -174,7 +185,7 @@ public class BankServerImpl implements BankServer {
 
     }
 
-    BigDecimal buy_stock(String share, CustomerEntity customer, int shares) throws BankServerException {
+    BigDecimal buy_stock(String share, Customer customer, int shares) throws BankServerException {
         try {
             BigDecimal a = tradingWebService.buy(share,shares);
             if(a.intValue() >= 0) {
@@ -193,8 +204,7 @@ public class BankServerImpl implements BankServer {
             }
             return a;
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new BankServerException(e.getMessage(), BankServerExceptionType.WEBSERVICE_FAULT);
+            throw new BankServerException("Failed to buy Stocks!" + e.getMessage(), BankServerExceptionType.WEBSERVICE_FAULT);
         }
 
 
@@ -203,7 +213,7 @@ public class BankServerImpl implements BankServer {
     @RolesAllowed({"customer"})
     public BigDecimal buy(String share, int shares) throws BankServerException {
         this.loggedInUser = getLoggedInUser();
-        return buy_stock(share, new CustomerEntity(new Customer(this.loggedInUser)), shares);
+        return buy_stock(share, new Customer(this.loggedInUser), shares);
     }
 
     @RolesAllowed({"customer"})
@@ -227,7 +237,7 @@ public class BankServerImpl implements BankServer {
         List<TransactionEntity> transactionEntities = transactionEntityDAO.getTransactionsByID(customerID);
         List<Transaction> transactions = new ArrayList<>();
         for(TransactionEntity transactionEntity : transactionEntities) {
-            List<Stock> x = listStock(transactionEntity.getStockSymbol());
+            List<Stock> x = findStockBySymbol(Arrays.asList(transactionEntity.getStockSymbol()));
             transactions.add(new Transaction(
                     transactionEntity.getID(),
                     transactionEntity.getCustomerID(),
@@ -235,8 +245,9 @@ public class BankServerImpl implements BankServer {
                     transactionEntity.getCompanyName(),
                     transactionEntity.getShareCount(),
                     transactionEntity.getTradeTime(),
-                    new BigDecimal(x.get(0).getLastTradePrice())
+                    BigDecimal.valueOf(x.get(0).getLastTradePrice())
             ));
+            System.out.println(x.get(0).getSymbol());
         }
         return transactions;
     }
@@ -247,7 +258,12 @@ public class BankServerImpl implements BankServer {
         List<CustomerEntity> customerEntities = customerEntityDAO.findbyID(customer_id);
         if(!customerEntities.isEmpty()) {
             if(!(customerEntities.size() > 1)) {
-                a = buy_stock(share, customerEntities.get(0), shares);
+                a = buy_stock(share, new Customer(
+                        customerEntities.get(0).getID(),
+                        customerEntities.get(0).getFirstName(),
+                        customerEntities.get(0).getLastName(),
+                        customerEntities.get(0).getUserName())
+                        , shares);
                 return a;
             } else {
                 throw new BankServerException("More than one User Existent in DB! Please Contact Sysadmin!", BankServerExceptionType.DATABASE_FAULT);
@@ -339,20 +355,24 @@ public class BankServerImpl implements BankServer {
         return true;
     }
 
-    private List<Stock> findStockBySymbol(List<String> symbols) throws TradingWSException_Exception {
-        List<PublicStockQuote> publicStockQuotes = tradingWebService.getStockQuotes(symbols);
-        List<Stock> stocks = new ArrayList<>();
-        for(PublicStockQuote publicStockQuote : publicStockQuotes) {
-            stocks.add(new Stock(
-                    publicStockQuote.getCompanyName(),
-                    publicStockQuote.getLastTradePrice().doubleValue(),
-                    publicStockQuote.getLastTradeTime().toGregorianCalendar().getTime(),
-                    publicStockQuote.getMarketCapitalization(),
-                    publicStockQuote.getStockExchange(),
-                    publicStockQuote.getSymbol())
-            );
+    private List<Stock> findStockBySymbol(List<String> symbols) throws BankServerException{
+        try {
+            List<PublicStockQuote> publicStockQuotes = tradingWebService.getStockQuotes(symbols);
+            List<Stock> stocks = new ArrayList<>();
+            for(PublicStockQuote publicStockQuote : publicStockQuotes) {
+                stocks.add(new Stock(
+                        publicStockQuote.getCompanyName(),
+                        publicStockQuote.getLastTradePrice().doubleValue(),
+                        publicStockQuote.getLastTradeTime().toGregorianCalendar().getTime(),
+                        publicStockQuote.getMarketCapitalization(),
+                        publicStockQuote.getStockExchange(),
+                        publicStockQuote.getSymbol())
+                );
+            }
+            return stocks;
+        } catch (TradingWSException_Exception webServiceException) {
+            throw new BankServerException(webServiceException.getMessage(), BankServerExceptionType.WEBSERVICE_FAULT);
         }
-        return stocks;
     }
 
 }

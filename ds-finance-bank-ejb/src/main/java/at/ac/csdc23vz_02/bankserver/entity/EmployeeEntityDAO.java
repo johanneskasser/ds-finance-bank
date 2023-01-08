@@ -1,6 +1,8 @@
 package at.ac.csdc23vz_02.bankserver.entity;
 
 import at.ac.csdc23vz_02.common.Person;
+import at.ac.csdc23vz_02.common.exceptions.BankServerException;
+import at.ac.csdc23vz_02.common.exceptions.BankServerExceptionType;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -9,8 +11,13 @@ import java.util.List;
 public class EmployeeEntityDAO {
     @PersistenceContext private EntityManager entityManager;
 
-    public void persist(EmployeeEntity employeeEntity) {
-        entityManager.persist(employeeEntity);
+    public void persist(EmployeeEntity employeeEntity) throws BankServerException {
+        List<EmployeeEntity> employeeEntities = findByUsername(employeeEntity.getUserName());
+        if(employeeEntities.isEmpty()) {
+            entityManager.persist(employeeEntity);
+        } else {
+            throw new BankServerException("User already exists!", BankServerExceptionType.DATABASE_FAULT);
+        }
     }
 
     public List<EmployeeEntity> findByUsername(String userName) {

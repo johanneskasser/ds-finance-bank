@@ -79,7 +79,7 @@ public class Stock implements Serializable {
     public String toString() {
         return "Company Name: " + this.getCompanyName() + "\n" +
                 "Symbol: " + this.getSymbol() + "\n" +
-                "Last Trade Price: " + this.getLastTradePrice().toString() + "\n" +
+                "Last Trade Price: €" + this.getLastTradePrice().toString() + "\n" +
                 "Last Trade Time: " + this.getLastTradeTime().toString() + "\n" +
                 "Market Capitalization: " + this.getMarketCapitalization().toString();
     }

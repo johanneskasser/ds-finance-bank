@@ -35,7 +35,7 @@ public class UserInterface {
     }
 
 
-    private void startRegisterProcess() {
+    private void startRegisterProcess() throws BankServerException {
         Customer customer = new Customer();
         Employee employee = new Employee();
         setModuleHeadline("Register");
@@ -45,20 +45,20 @@ public class UserInterface {
             try {
                 bankServer.createCustomer(customer);
                 showResponseMessage("User Created.", MessageType.SUCCESS);
-                showMainMenu();
+                endOfModuleChoices();
             } catch (BankServerException e) {
-                showResponseMessage("Something went wrong while trying to create Customer. Please see Stack Trace.", MessageType.ERROR);
-                e.printStackTrace();
+                showResponseMessage(e.getMessage(), MessageType.ERROR);
+                endOfModuleChoices();
             }
         } else {
             employee.setPerson(inputPerson());
             try {
                 bankServer.createEmployee(employee);
                 showResponseMessage("User Created.", MessageType.SUCCESS);
-                showMainMenu();
+                endOfModuleChoices();
             } catch (BankServerException e) {
-                showResponseMessage("Something went wrong while trying to create Customer. Please see Stack Trace.", MessageType.ERROR);
-                e.printStackTrace();
+                showResponseMessage(e.getMessage(), MessageType.ERROR);
+                endOfModuleChoices();
             }
         }
     }
@@ -143,7 +143,7 @@ public class UserInterface {
         endOfModuleChoices();
     }
 
-    private List<Transaction> printDepot(int id) {
+    private List<Transaction> printDepot(int id) throws BankServerException {
         Customer customer = bankServer.search_customer_with_id(id);
         List<Transaction> transactions = new ArrayList<>();
         if(!(customer.getId() == 0)) {
@@ -465,12 +465,10 @@ public class UserInterface {
 
     private void endOfModuleChoices() throws BankServerException {
         setModuleHeadline("Module completed. Select next step");
-        int output = showMenu(Arrays.asList("Run Module again","Return to main Menu", "End Application"));
+        int output = showMenu(Arrays.asList("Return to main Menu", "End Application"));
         if(output == 1) {
-            searchAvailableShare();
-        } else if (output == 2) {
             showMainMenu();
-        } else if (output == 3) {
+        } else if (output == 2) {
         }
     }
 
@@ -498,18 +496,18 @@ public class UserInterface {
 
     private void showTransactionsList(List<Transaction> transactionList) {
         int count = 1;
-        BigDecimal totalSum = BigDecimal.valueOf(0);
+        double totalSum = 0;
         if(!transactionList.isEmpty()) {
             for (Transaction transaction : transactionList) {
-                totalSum = totalSum.add((transaction.getBuyPrice() == null) ? BigDecimal.valueOf(0) : transaction.getBuyPrice());
+                totalSum += (transaction.getBuyPrice().doubleValue() * transaction.getShareCount());
                 showResponseMessage(count + ") "
                         + transaction.getCompanyName()
                         +  " - " + transaction.getStocksymbol()
-                        + " - €" + ((transaction.getBuyPrice() == null) ? "NaN" : transaction.getBuyPrice().toString())
+                        + " - Current Price per Stock: €" + ((transaction.getBuyPrice() == null) ? "NaN" : transaction.getBuyPrice().toString())
                         + " - # of owned Shares: " + transaction.getShareCount()
                         + " - ID: " + transaction.getID() , MessageType.RESET);
             }
-            showResponseMessage("=========================================\nTotal Amount of owned assets: €" + totalSum, MessageType.INFO);
+            showResponseMessage("=========================================\nCurrent Value of owned assets: €" + totalSum, MessageType.INFO);
         } else {
             showResponseMessage("No bought Stocks found!", MessageType.ERROR);
         }

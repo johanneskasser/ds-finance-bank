@@ -6,12 +6,15 @@ import at.ac.csdc23vz_02.common.exceptions.BankServerExceptionType;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionEntityDAO {
     @PersistenceContext private EntityManager entityManager;
 
         public void persist(TransactionEntity transactionEntity) {
+            System.out.println("ID " + transactionEntity.getCustomerID());
+            System.out.println(transactionEntity.getStockSymbol());
             List<TransactionEntity> transactionEntities = getTransactionsByStockSymbolAndID(transactionEntity.getStockSymbol(), transactionEntity.getCustomerID());
             if(transactionEntities.isEmpty()) {
                 entityManager.merge(transactionEntity);
@@ -30,12 +33,14 @@ public class TransactionEntityDAO {
                     .getResultList();
         }
 
-    public List<TransactionEntity> getTransactionsByStockSymbolAndID(String stockSymbol, int customer_id) {
-        return entityManager.createQuery("SELECT t from TransactionEntity t where t.stockSymbol = :stockSymbol and t.customerID = :customerID", TransactionEntity.class)
-                .setParameter("stockSymbol", stockSymbol)
-                .setParameter("customerID", customer_id)
-                .getResultList();
-    }
+        public List<TransactionEntity> getTransactionsByStockSymbolAndID(String stockSymbol, int customer_id) {
+            List<TransactionEntity> transactionEntities = new ArrayList<>();
+            transactionEntities = entityManager.createQuery("SELECT t from TransactionEntity t where t.stockSymbol = :stockSymbol and t.customerID = :customerID", TransactionEntity.class)
+                    .setParameter("stockSymbol", stockSymbol)
+                    .setParameter("customerID", customer_id)
+                    .getResultList();
+            return transactionEntities;
+        }
 
         public boolean sellTransaction(int id, int sharesToSell) throws BankServerException {
             List<TransactionEntity> transactionEntities = entityManager.createQuery("select t from TransactionEntity t where t.id = :id", TransactionEntity.class)

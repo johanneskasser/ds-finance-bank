@@ -1,5 +1,6 @@
 package at.ac.csdc23vz_02.bankserver.entity;
 
+import at.ac.csdc23vz_02.common.Customer;
 import at.ac.csdc23vz_02.common.Stock;
 
 import javax.persistence.*;
@@ -47,8 +48,8 @@ public class TransactionEntity implements Serializable {
 
     }
 
-    public TransactionEntity(Stock stock, CustomerEntity customer, int shareCount) {
-        this.customerID = customer.getID();
+    public TransactionEntity(Stock stock, Customer customer, int shareCount) {
+        this.customerID = customer.getId();
         this.stockSymbol = stock.getSymbol();
         this.companyName = stock.getCompanyName();
         this.shareCount = shareCount;
