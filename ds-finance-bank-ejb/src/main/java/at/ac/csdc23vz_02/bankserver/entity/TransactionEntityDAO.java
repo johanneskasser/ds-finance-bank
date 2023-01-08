@@ -12,7 +12,16 @@ public class TransactionEntityDAO {
     @PersistenceContext private EntityManager entityManager;
 
         public void persist(TransactionEntity transactionEntity) {
-            entityManager.merge(transactionEntity);
+            List<TransactionEntity> transactionEntities = getTransactionsByStockSymbolAndID(transactionEntity.getStockSymbol(), transactionEntity.getCustomerID());
+            if(transactionEntities.isEmpty()) {
+                entityManager.merge(transactionEntity);
+            } else {
+                entityManager.createQuery("UPDATE TransactionEntity t set t.shareCount = :newShareCount where t.stockSymbol = :stockSymbol and t.customerID = :customerID")
+                        .setParameter("newShareCount", transactionEntities.get(0).getShareCount() + transactionEntity.getShareCount())
+                        .setParameter("stockSymbol", transactionEntity.getStockSymbol())
+                        .setParameter("customerID", transactionEntity.getCustomerID())
+                        .executeUpdate();
+            }
         }
 
         public List<TransactionEntity> getTransactionsByID(int customerID) {
@@ -20,6 +29,13 @@ public class TransactionEntityDAO {
                     .setParameter("id", customerID)
                     .getResultList();
         }
+
+    public List<TransactionEntity> getTransactionsByStockSymbolAndID(String stockSymbol, int customer_id) {
+        return entityManager.createQuery("SELECT t from TransactionEntity t where t.stockSymbol = :stockSymbol and t.customerID = :customerID", TransactionEntity.class)
+                .setParameter("stockSymbol", stockSymbol)
+                .setParameter("customerID", customer_id)
+                .getResultList();
+    }
 
         public boolean sellTransaction(int id, int sharesToSell) throws BankServerException {
             List<TransactionEntity> transactionEntities = entityManager.createQuery("select t from TransactionEntity t where t.id = :id", TransactionEntity.class)

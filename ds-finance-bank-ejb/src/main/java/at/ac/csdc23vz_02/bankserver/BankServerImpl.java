@@ -193,7 +193,8 @@ public class BankServerImpl implements BankServer {
             }
             return a;
         } catch (Exception e) {
-            throw new BankServerException("Failed to buy Stocks!", BankServerExceptionType.WEBSERVICE_FAULT);
+            e.printStackTrace();
+            throw new BankServerException(e.getMessage(), BankServerExceptionType.WEBSERVICE_FAULT);
         }
 
 
@@ -309,14 +310,14 @@ public class BankServerImpl implements BankServer {
                     employeeEntities.get(0).getFirstName(),
                     employeeEntities.get(0).getLastName(),
                     employeeEntities.get(0).getUserName(),
-                    null);
+                    employeeEntities.get(0).getPwHash());
         } else if(!customerEntity.isEmpty() && employeeEntities.isEmpty()) {
             return new Person(
                     customerEntity.get(0).getID(),
                     customerEntity.get(0).getFirstName(),
                     customerEntity.get(0).getLastName(),
                     customerEntity.get(0).getUserName(),
-                    null);
+                    customerEntity.get(0).getPwHash());
         } else {
             throw new BankServerException("User which is logged in could not be found in Database!", BankServerExceptionType.SESSION_FAULT);
         }
