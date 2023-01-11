@@ -107,7 +107,7 @@ public class UserInterface {
                 case 2: buyShare(); break;
                 case 3: sellShare(); break;
                 case 4: showDepot(); break;
-                case 5: managePersonalData(); break;
+                case 5: managePersonalData(this.loggedInUser); break;
                 case 6: logout(); break;
             }
         } else if(this.userType == UserType.EMPLOYEE){
@@ -212,7 +212,7 @@ public class UserInterface {
     private void searchCustomer() throws BankServerException {
         setModuleHeadline("Search Customer");
         int output = showMenu(Arrays.asList(
-                "Search by ID",
+                "Search by ID and edit User",
                 "Search by Name"
         ));
         if(output == 1) {
@@ -223,9 +223,19 @@ public class UserInterface {
                 showResponseMessage("No User Found!", MessageType.ERROR);
             } else {
                 showResponseMessage("Customer found.", MessageType.SUCCESS);
-                Person person = new Person(customer.getFirstName(), customer.getLastName(), customer.getUserName(), null);
+                Person person = new Person(customer.getFirstName(), customer.getLastName(), customer.getUserName(), customer.getPassword());
                 person.setId(customer.getId());
                 showUserData(person);
+                showResponseMessage("Next possible actions", MessageType.INFO);
+                int output1 = showMenu(Arrays.asList(
+                        "Edit user",
+                        "Return back to main menu")
+                        );
+                if(output1 == 1) {
+                    managePersonalData(person);
+                } else {
+                    showMainMenu();
+                }
             }
         } else {
             showResponseMessage("Please enter the Name", MessageType.INFO);
@@ -252,9 +262,9 @@ public class UserInterface {
         endOfModuleChoices();
     }
 
-    private void managePersonalData() throws BankServerException {
+    private void managePersonalData(Person person) throws BankServerException {
         setModuleHeadline("Manage Personal Data");
-        showUserData(this.loggedInUser);
+        showUserData(person);
         showResponseMessage("Available Options", MessageType.INFO);
         int output = showMenu(Arrays.asList(
                 "Update Personal Information",
@@ -262,35 +272,35 @@ public class UserInterface {
                 "Return to main menu"
         ));
         switch (output) {
-            case 1: updatePersonalInformation(); break;
-            case 2: resetPassword(); break;
+            case 1: updatePersonalInformation(person); break;
+            case 2: resetPassword(person); break;
             case 3: showMainMenu(); break;
         }
         endOfModuleChoices();
     }
 
-    private void resetPassword() throws BankServerException {
-        String newPwFirst = showInputElement("new password");
+    private void resetPassword(Person person) throws BankServerException {
+        String newPwFirst = showInputElement("New password");
         String newPwSecond = showInputElement("Repeat new password");
 
         while(!newPwFirst.equals(newPwSecond)) {
             showResponseMessage("Passwords do not match!", MessageType.ERROR);
-            newPwFirst = showInputElement("new password");
+            newPwFirst = showInputElement("New password");
             newPwSecond = showInputElement("Repeat new password");
         }
 
-        loggedInUser.setPassword(newPwSecond);
+        person.setPassword(newPwSecond);
 
-        if(bankServer.updateUser(loggedInUser)) {
-            showResponseMessage("Password reseted", MessageType.SUCCESS);
+        if(bankServer.updateUser(person)) {
+            showResponseMessage("Successful Password reset!", MessageType.SUCCESS);
         }else {
-            showResponseMessage("Password not reseted - please try again", MessageType.ERROR);
+            showResponseMessage("Failed Password reset - please try again", MessageType.ERROR);
         }
 
         endOfModuleChoices();
     }
 
-    private void updatePersonalInformation() throws BankServerException {
+    private void updatePersonalInformation(Person person) throws BankServerException {
         showResponseMessage("Update Personal Information", MessageType.INFO);
         int output = showMenu(Arrays.asList(
                 "Update First Name",
@@ -298,14 +308,14 @@ public class UserInterface {
         ));
         if(output == 1) {
             //Update First Name
-            showResponseMessage("Change Last Name", MessageType.INFO);
+            showResponseMessage("Change First Name", MessageType.INFO);
             String newFirstName = showInputElement("New first Name");
             while(!checkIfInputWasCorrect()) {
-                showResponseMessage("Change Last Name", MessageType.INFO);
+                showResponseMessage("Change First Name", MessageType.INFO);
                 newFirstName = showInputElement("New first Name");
             }
-            this.loggedInUser.setFirstName(newFirstName);
-            bankServer.updateUser(this.loggedInUser);
+            person.setFirstName(newFirstName);
+            bankServer.updateUser(person);
         } else if(output == 2) {
             //Update Last Name
             showResponseMessage("Change Last Name", MessageType.INFO);
@@ -314,8 +324,8 @@ public class UserInterface {
                 showResponseMessage("Change Last Name", MessageType.INFO);
                 newLastName = showInputElement("New last Name");
             }
-            this.loggedInUser.setLastName(newLastName);
-            bankServer.updateUser(this.loggedInUser);
+            person.setLastName(newLastName);
+            bankServer.updateUser(person);
         }
     }
 
