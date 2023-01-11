@@ -132,8 +132,12 @@ public class UserInterface {
         }
     }
 
-    private void showAvailableBudget() {
-
+    private void showAvailableBudget() throws BankServerException {
+        //TODO: Value is displayed kind of odd - try to fix it (Available Budget: €9.9999849928E8)
+        setModuleHeadline("Available Budget from Bank at Stock Exchange");
+        double availBudget = bankServer.getAvailableBudget();
+        showResponseMessage("Available Budget: €" + availBudget, MessageType.INFO);
+        endOfModuleChoices();
     }
 
     private void showDepotForCustomer() throws BankServerException {
@@ -268,13 +272,11 @@ public class UserInterface {
         showResponseMessage("Available Options", MessageType.INFO);
         int output = showMenu(Arrays.asList(
                 "Update Personal Information",
-                "Set new Password",
                 "Return to main menu"
         ));
         switch (output) {
             case 1: updatePersonalInformation(person); break;
-            case 2: resetPassword(person); break;
-            case 3: showMainMenu(); break;
+            case 2: showMainMenu(); break;
         }
         endOfModuleChoices();
     }
@@ -516,6 +518,7 @@ public class UserInterface {
                         + " - Current Price per Stock: €" + ((transaction.getBuyPrice() == null) ? "NaN" : transaction.getBuyPrice().toString())
                         + " - # of owned Shares: " + transaction.getShareCount()
                         + " - ID: " + transaction.getID() , MessageType.RESET);
+                count++;
             }
             showResponseMessage("=========================================\nCurrent Value of owned assets: €" + totalSum, MessageType.INFO);
         } else {

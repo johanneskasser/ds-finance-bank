@@ -37,11 +37,12 @@ public class BankServerImpl implements BankServer {
     private final WildflyAuthDBHelper wildflyAuthDBHelper = new WildflyAuthDBHelper();
     private final TradingWebService tradingWebService;
     private Person loggedInUser;
-    private PWHash pwHash = new PWHash();
+    private final PWHash pwHash = new PWHash();
 
     @Inject CustomerEntityDAO customerEntityDAO;
     @Inject EmployeeEntityDAO employeeEntityDAO;
     @Inject TransactionEntityDAO transactionEntityDAO;
+    @Inject BankBudgetEntityDAO bankBudgetEntityDAO;
     @Resource private SessionContext sessionContext;
 
     public BankServerImpl() throws BankServerException {
@@ -177,12 +178,15 @@ public class BankServerImpl implements BankServer {
 
 
     BigDecimal sell_stock(String share, int customer_id, int shares, int transactionID) throws BankServerException {
+        bankBudgetEntityDAO.persist();
         try {
             BigDecimal a = tradingWebService.sell(share,shares);
             if(a.intValue() >= 0) {
                 List<TransactionEntity> transactionEntities = transactionEntityDAO.getTransactionsByID(customer_id);
                 if(!(transactionEntities.isEmpty())) {
                     if(transactionEntityDAO.sellTransaction(transactionID, shares)) {
+                        double totalValue = a.doubleValue() * shares;
+                        bankBudgetEntityDAO.addBudget(totalValue);
                         return a;
                     }
                 }
@@ -197,6 +201,7 @@ public class BankServerImpl implements BankServer {
     }
 
     BigDecimal buy_stock(String share, Customer customer, int shares) throws BankServerException {
+        bankBudgetEntityDAO.persist();
         try {
             BigDecimal a = tradingWebService.buy(share,shares);
             if(a.intValue() >= 0) {
@@ -205,7 +210,9 @@ public class BankServerImpl implements BankServer {
                     if(!(stockList.size() > 1)) {
                         TransactionEntity transactionEntity = new TransactionEntity(stockList.get(0), customer, shares);
                         transactionEntity.setBuyPrice(a);
+                        double totalPrice = a.doubleValue() * transactionEntity.getShareCount().doubleValue();
                         transactionEntityDAO.persist(transactionEntity);
+                        bankBudgetEntityDAO.deductBudget(totalPrice);
                     } else {
                         throw new BankServerException("Symbol of Stock is not unique!", BankServerExceptionType.TRANSACTION_FAULT);
                     }
@@ -258,7 +265,6 @@ public class BankServerImpl implements BankServer {
                     transactionEntity.getTradeTime(),
                     BigDecimal.valueOf(x.get(0).getLastTradePrice())
             ));
-            System.out.println(x.get(0).getSymbol());
         }
         return transactions;
     }
@@ -327,6 +333,12 @@ public class BankServerImpl implements BankServer {
         return customers;
     }
 
+    @RolesAllowed({"employee"})
+    public Double getAvailableBudget() {
+        bankBudgetEntityDAO.persist();
+        return bankBudgetEntityDAO.getAvailableBudget();
+    }
+
     @RolesAllowed({"employee", "customer"})
     public Person getLoggedInUser() throws BankServerException {
         String username = sessionContext.getCallerPrincipal().getName();
@@ -355,13 +367,10 @@ public class BankServerImpl implements BankServer {
     public boolean updateUser(Person person) throws BankServerException {
         List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(person.getUserName());
         List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(person.getUserName());
-        List<String> saltPW = pwHash.createSaltAndHashPassword(person.getPassword());
-        person.setPassword(saltPW.get(1));
-        System.out.println(person.getPassword());
         if(customerEntity.isEmpty() && !employeeEntities.isEmpty()) {
-            employeeEntityDAO.updateUserByUsername(person, saltPW.get(0));
+            employeeEntityDAO.updateUserByUsername(person);
         } else if(!customerEntity.isEmpty() && employeeEntities.isEmpty()) {
-            customerEntityDAO.updateUserByUsername(person, saltPW.get(0));
+            customerEntityDAO.updateUserByUsername(person);
         } else {
             throw new BankServerException("User which is logged in could not be found in Database!", BankServerExceptionType.SESSION_FAULT);
         }

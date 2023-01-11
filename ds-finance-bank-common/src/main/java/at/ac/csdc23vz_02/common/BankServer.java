@@ -38,4 +38,6 @@ public interface BankServer {
     Customer search_customer_with_id(int customer_id);
 
     List<Customer> search_customer_with_name(String first_name, String last_name);
+
+    Double getAvailableBudget();
 }

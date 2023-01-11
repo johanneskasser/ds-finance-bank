@@ -1,6 +1,5 @@
 package at.ac.csdc23vz_02.bankserver.entity;
 
-import at.ac.csdc23vz_02.common.Transaction;
 import at.ac.csdc23vz_02.common.exceptions.BankServerException;
 import at.ac.csdc23vz_02.common.exceptions.BankServerExceptionType;
 
