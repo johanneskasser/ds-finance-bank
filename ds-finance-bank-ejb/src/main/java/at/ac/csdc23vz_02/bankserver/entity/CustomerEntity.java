@@ -28,6 +28,9 @@ public class CustomerEntity implements Serializable {
     @Column(name="pwHash")
     private String pwHash;
 
+    @Column(name = "salt")
+    private String salt;
+
     public CustomerEntity(Customer customer){
         this.firstName = customer.getFirstName();
         this.userName = customer.getUserName();
@@ -37,6 +40,14 @@ public class CustomerEntity implements Serializable {
 
     public CustomerEntity() {
 
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     public Integer getID() {

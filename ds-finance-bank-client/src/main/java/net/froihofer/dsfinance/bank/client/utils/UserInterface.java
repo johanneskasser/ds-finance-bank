@@ -2,10 +2,8 @@ package net.froihofer.dsfinance.bank.client.utils;
 
 import at.ac.csdc23vz_02.common.*;
 import at.ac.csdc23vz_02.common.exceptions.BankServerException;
-import net.froihofer.util.AuthCallbackHandler;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.*;
 
 public class UserInterface {
@@ -14,6 +12,7 @@ public class UserInterface {
     private final Scanner in = new Scanner(System.in);
     private UserType userType = UserType.CUSTOMER;
     private Person loggedInUser;
+
 
     public UserInterface() {
     }
@@ -134,6 +133,7 @@ public class UserInterface {
     }
 
     private void showAvailableBudget() {
+
     }
 
     private void showDepotForCustomer() throws BankServerException {

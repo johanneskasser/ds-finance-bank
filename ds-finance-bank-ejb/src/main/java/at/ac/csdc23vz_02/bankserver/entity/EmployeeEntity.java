@@ -28,6 +28,9 @@ public class EmployeeEntity implements Serializable {
     @Column(name="pwHash")
     private String pwHash;
 
+    @Column(name = "salt")
+    private String salt;
+
     public EmployeeEntity() {
     }
 
@@ -36,6 +39,14 @@ public class EmployeeEntity implements Serializable {
         this.userName = employee.getUserName();
         this.lastName = employee.getLastName();
         this.pwHash = employee.getPassword();
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     public Integer getID() {

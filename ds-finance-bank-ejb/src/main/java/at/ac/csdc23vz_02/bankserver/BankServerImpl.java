@@ -2,6 +2,7 @@ package at.ac.csdc23vz_02.bankserver;
 
 import at.ac.csdc23vz_02.bankserver.entity.*;
 import at.ac.csdc23vz_02.bankserver.util.LoginType;
+import at.ac.csdc23vz_02.bankserver.util.PWHash;
 import at.ac.csdc23vz_02.common.*;
 import at.ac.csdc23vz_02.common.exceptions.*;
 import at.ac.csdc23vz_02.trading.PublicStockQuote;
@@ -22,6 +23,8 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +37,7 @@ public class BankServerImpl implements BankServer {
     private final WildflyAuthDBHelper wildflyAuthDBHelper = new WildflyAuthDBHelper();
     private final TradingWebService tradingWebService;
     private Person loggedInUser;
+    private PWHash pwHash = new PWHash();
 
     @Inject CustomerEntityDAO customerEntityDAO;
     @Inject EmployeeEntityDAO employeeEntityDAO;
@@ -42,6 +46,7 @@ public class BankServerImpl implements BankServer {
 
     public BankServerImpl() throws BankServerException {
         this.tradingWebService = initTradingService();
+        this.pwHash.init();
     }
 
     /**
@@ -76,6 +81,9 @@ public class BankServerImpl implements BankServer {
         CustomerEntity customerEntity = new CustomerEntity(customer);
         List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(customer.getUserName());
         if(employeeEntities.isEmpty()) {
+            List<String> saltAndHashPassword = this.pwHash.createSaltAndHashPassword(customer.getPassword());
+            customerEntity.setPwHash(saltAndHashPassword.get(1));
+            customerEntity.setSalt(saltAndHashPassword.get(0));
             customerEntityDAO.persist(customerEntity);
             try {
                 wildflyAuthDBHelper.addUser(customer.getUserName(), customer.getPassword(), new String[]{"customer"});
@@ -97,6 +105,9 @@ public class BankServerImpl implements BankServer {
         EmployeeEntity employeeEntity = new EmployeeEntity(employee);
         List<CustomerEntity> customerEntities = customerEntityDAO.findByUsername(employee.getUserName());
         if(customerEntities.isEmpty()) {
+            List<String> saltAndHashedPassword = this.pwHash.createSaltAndHashPassword(employee.getPassword());
+            employeeEntity.setPwHash(saltAndHashedPassword.get(1));
+            employeeEntity.setSalt(saltAndHashedPassword.get(0));
             employeeEntityDAO.persist(employeeEntity);
             try {
                 wildflyAuthDBHelper.addUser(employee.getUserName(), employee.getPassword(), new String[]{"employee"});
@@ -111,7 +122,7 @@ public class BankServerImpl implements BankServer {
     /**
      * Login function. Checks if User is existent in DB --> Differentiates Employee and Customer
      * @param credentials Login Credentials
-     * @return Response code --> LoginType (1 --> Customer Success, 2 --> Employee Success, 3 --> Login Failure
+     * @return Response code --> LoginType (1 --> Customer Success, 2 --> Employee Success, 3 --> Login Failure)
      * @see LoginType Enum Class for Login Types
      * @throws BankServerException User is not existent in DB
      */
@@ -125,7 +136,7 @@ public class BankServerImpl implements BankServer {
         } else if(customerEntity.isEmpty()) {
             //User is an en Employee
             for(EmployeeEntity employee : employeeEntities) {
-                if(employee.getPwHash().equals(credentials.get(1))) {
+                if(pwHash.checkPassword(employee.getSalt(), employee.getPwHash(), credentials.get(1))) {
                     return LoginType.EMPLOYEE_SUCCESS.getCode();
                 }
                 return LoginType.LOGIN_FAILURE.getCode();
@@ -133,7 +144,7 @@ public class BankServerImpl implements BankServer {
         } else if(employeeEntities.isEmpty()) {
             //User is a Customer
             for(CustomerEntity customer : customerEntity) {
-                if(customer.getPwHash().equals(credentials.get(1))) {
+                if(pwHash.checkPassword(customer.getSalt(), customer.getPwHash(), credentials.get(1))) {
                     return LoginType.CUSTOMER_SUCCESS.getCode();
                 }
                 return LoginType.LOGIN_FAILURE.getCode();
@@ -344,14 +355,16 @@ public class BankServerImpl implements BankServer {
     public boolean updateUser(Person person) throws BankServerException {
         List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(person.getUserName());
         List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(person.getUserName());
+        List<String> saltPW = pwHash.createSaltAndHashPassword(person.getPassword());
+        person.setPassword(saltPW.get(1));
+        System.out.println(person.getPassword());
         if(customerEntity.isEmpty() && !employeeEntities.isEmpty()) {
-            employeeEntityDAO.updateUserByUsername(person);
+            employeeEntityDAO.updateUserByUsername(person, saltPW.get(0));
         } else if(!customerEntity.isEmpty() && employeeEntities.isEmpty()) {
-            customerEntityDAO.updateUserByUsername(person);
+            customerEntityDAO.updateUserByUsername(person, saltPW.get(0));
         } else {
             throw new BankServerException("User which is logged in could not be found in Database!", BankServerExceptionType.SESSION_FAULT);
         }
-
         return true;
     }
 
