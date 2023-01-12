@@ -367,10 +367,20 @@ public class BankServerImpl implements BankServer {
     public boolean updateUser(Person person) throws BankServerException {
         List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(person.getUserName());
         List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(person.getUserName());
+        List<String> pwAndSalt = pwHash.createSaltAndHashPassword(person.getPassword());
+        String plainTextPassword = person.getPassword();
+        person.setPassword(pwAndSalt.get(1));
+        if(!employeeEntities.isEmpty() && !customerEntity.isEmpty()) {
+            try {
+                wildflyAuthDBHelper.changePassword(person.getUserName(), plainTextPassword);
+            } catch (IOException ioException) {
+                throw new BankServerException("Failed to change User Information in Wildfly Auth DB!" + ioException.getMessage(), BankServerExceptionType.WEBSERVER_FAULT);
+            }
+        }
         if(customerEntity.isEmpty() && !employeeEntities.isEmpty()) {
-            employeeEntityDAO.updateUserByUsername(person);
+            employeeEntityDAO.updateUserByUsername(person, pwAndSalt.get(0));
         } else if(!customerEntity.isEmpty() && employeeEntities.isEmpty()) {
-            customerEntityDAO.updateUserByUsername(person);
+            customerEntityDAO.updateUserByUsername(person, pwAndSalt.get(0));
         } else {
             throw new BankServerException("User which is logged in could not be found in Database!", BankServerExceptionType.SESSION_FAULT);
         }

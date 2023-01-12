@@ -125,7 +125,53 @@ public class WildflyAuthDBHelper {
     rolesProps.store(pw,initialComment);
     pw.close();
   }
-  
+
+  private void removeUserFromDBs(String user, File usersDb, File rolesDb) throws IOException {
+    //Process usersDB
+    String initialComment = getInitialCommentFromPropertiesFile(usersDb);
+    Properties users = new Properties();
+    InputStreamReader isr = new InputStreamReader(new FileInputStream(usersDb));
+    users.load(isr);
+    isr.close();
+    users.remove(user);
+    PrintWriter pw = new PrintWriter(usersDb);
+    users.store(pw,initialComment);
+    pw.close();
+
+    // Process rolesDB
+    Properties rolesProps = new Properties();
+    isr = new InputStreamReader(new FileInputStream(rolesDb));
+    rolesProps.load(isr);
+    isr.close();
+    rolesProps.remove(user);
+    pw = new PrintWriter(rolesDb);
+    rolesProps.store(pw,initialComment);
+    pw.close();
+  }
+
+  private void changeUserPassword(String user, String newPassword, File usersDb) throws IOException {
+    //Process usersDB
+    String initialComment = getInitialCommentFromPropertiesFile(usersDb);
+    Properties users = new Properties();
+    InputStreamReader isr = new InputStreamReader(new FileInputStream(usersDb));
+    users.load(isr);
+    isr.close();
+    MessageDigest md = null;
+    try {
+      md = MessageDigest.getInstance("MD5");
+    }
+    catch (NoSuchAlgorithmException e) {
+      throw new IOException(e);
+    }
+    String passwordEntry = Hex.encodeHexString(md.digest((user+":ApplicationRealm:"+newPassword).getBytes())).toLowerCase();
+    users.put(user, passwordEntry);
+    PrintWriter pw = new PrintWriter(usersDb);
+    users.store(pw,initialComment);
+    pw.close();
+  }
+
+
+
   /**
    * Adds a user to the JBoss authentication database.
    * @param user username of the user
@@ -138,8 +184,12 @@ public class WildflyAuthDBHelper {
     //addUserToDBs(user,password,roles,applicationUsersDbDomain,rolesDbDomain);
   }
   
-  public void removeUser(String user) {
-    throw new UnsupportedOperationException("removeUser(user) is left as an exercise");
+  public void removeUser(String user) throws IOException {
+    removeUserFromDBs(user, applicationUsersDbStandalone, rolesDbStandalone);
+  }
+
+  public void changePassword(String user, String password) throws IOException {
+    changeUserPassword(user, password, applicationUsersDbStandalone);
   }
   
 }

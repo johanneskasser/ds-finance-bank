@@ -4,7 +4,8 @@ public enum BankServerExceptionType {
     SESSION_FAULT(1, "Session Fault"),
     WEBSERVICE_FAULT(2, "Webservice Fault"),
     DATABASE_FAULT(3, "Database Fault"),
-    TRANSACTION_FAULT(4, "Transaction Fault");
+    TRANSACTION_FAULT(4, "Transaction Fault"),
+    WEBSERVER_FAULT(5, "Webserver Fault");
 
 
     private final Integer code;

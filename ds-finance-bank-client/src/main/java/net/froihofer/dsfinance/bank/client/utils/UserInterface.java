@@ -5,8 +5,6 @@ import at.ac.csdc23vz_02.common.exceptions.BankServerException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.*;
 
 public class UserInterface {
@@ -285,6 +283,7 @@ public class UserInterface {
     }
 
     private void resetPassword(Person person) throws BankServerException {
+        showResponseMessage("Reset Password", MessageType.INFO);
         String newPwFirst = showInputElement("New password");
         String newPwSecond = showInputElement("Repeat new password");
 
@@ -302,14 +301,14 @@ public class UserInterface {
             showResponseMessage("Failed Password reset - please try again", MessageType.ERROR);
         }
 
-        endOfModuleChoices();
     }
 
     private void updatePersonalInformation(Person person) throws BankServerException {
         showResponseMessage("Update Personal Information", MessageType.INFO);
         int output = showMenu(Arrays.asList(
                 "Update First Name",
-                "Update Last Name"
+                "Update Last Name",
+                "Change Password"
         ));
         if(output == 1) {
             //Update First Name
@@ -331,7 +330,10 @@ public class UserInterface {
             }
             person.setLastName(newLastName);
             bankServer.updateUser(person);
+        } else if(output == 3) {
+            resetPassword(person);
         }
+        endOfModuleChoices();
     }
 
     private void showDepot() throws BankServerException {
