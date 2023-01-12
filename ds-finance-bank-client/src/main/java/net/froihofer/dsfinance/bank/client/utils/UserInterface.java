@@ -4,6 +4,9 @@ import at.ac.csdc23vz_02.common.*;
 import at.ac.csdc23vz_02.common.exceptions.BankServerException;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 
 public class UserInterface {
@@ -133,10 +136,10 @@ public class UserInterface {
     }
 
     private void showAvailableBudget() throws BankServerException {
-        //TODO: Value is displayed kind of odd - try to fix it (Available Budget: €9.9999849928E8)
         setModuleHeadline("Available Budget from Bank at Stock Exchange");
         double availBudget = bankServer.getAvailableBudget();
-        showResponseMessage("Available Budget: €" + availBudget, MessageType.INFO);
+        BigDecimal bigDecimal = new BigDecimal(availBudget);
+        showResponseMessage("Available Budget: €" + bigDecimal.setScale(2, RoundingMode.HALF_EVEN), MessageType.INFO);
         endOfModuleChoices();
     }
 
