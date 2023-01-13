@@ -40,4 +40,6 @@ public interface BankServer {
     List<Customer> search_customer_with_name(String first_name, String last_name);
 
     Double getAvailableBudget();
+
+    boolean deleteUser(Person person) throws BankServerException;
 }

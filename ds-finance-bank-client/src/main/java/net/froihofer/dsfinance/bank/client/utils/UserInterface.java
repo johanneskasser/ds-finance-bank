@@ -273,13 +273,35 @@ public class UserInterface {
         showResponseMessage("Available Options", MessageType.INFO);
         int output = showMenu(Arrays.asList(
                 "Update Personal Information",
+                "Delete User",
                 "Return to main menu"
         ));
         switch (output) {
             case 1: updatePersonalInformation(person); break;
-            case 2: showMainMenu(); break;
+            case 2: deleteUser(person); break;
+            case 3: showMainMenu(); break;
         }
         endOfModuleChoices();
+    }
+
+    private void deleteUser(Person person) throws BankServerException {
+        setModuleHeadline("Delete User: " + person.getFullName());
+        if(this.userType == UserType.CUSTOMER) {
+            showResponseMessage("Cannot delete own User. Please consult an Employee!", MessageType.ERROR);
+        } else {
+            showResponseMessage("Are you sure you want to delete the User: " + person.getFullName(), MessageType.INFO);
+            String output = showInputElement("Y/N");
+            if(output.equalsIgnoreCase("Y")) {
+                if(bankServer.deleteUser(person)) {
+                    showResponseMessage("User successfully deleted!", MessageType.SUCCESS);
+                } else {
+                    showResponseMessage("Please sell all Stocks before trying to delete User!", MessageType.ERROR);
+                }
+            }
+        }
+
+
+
     }
 
     private void resetPassword(Person person) throws BankServerException {
@@ -320,6 +342,7 @@ public class UserInterface {
             }
             person.setFirstName(newFirstName);
             bankServer.updateUser(person);
+            showResponseMessage("First Name changed.", MessageType.SUCCESS);
         } else if(output == 2) {
             //Update Last Name
             showResponseMessage("Change Last Name", MessageType.INFO);
@@ -330,6 +353,7 @@ public class UserInterface {
             }
             person.setLastName(newLastName);
             bankServer.updateUser(person);
+            showResponseMessage("Last Name changed.", MessageType.SUCCESS);
         } else if(output == 3) {
             resetPassword(person);
         }
@@ -439,12 +463,12 @@ public class UserInterface {
     }
 
     private void showUserData(Person person) {
+        if(!(person.getId() == null) && !(person.getId() == 0)) {
+            System.out.println("ID:         " + MessageType.INFO.getCode() + person.getId() + MessageType.RESET.getCode());
+        }
         System.out.println("First Name: " + MessageType.INFO.getCode() + person.getFirstName() + MessageType.RESET.getCode());
         System.out.println("Last Name:  " + MessageType.INFO.getCode() + person.getLastName() + MessageType.RESET.getCode());
         System.out.println("Username:   " + MessageType.INFO.getCode() + person.getUserName() + MessageType.RESET.getCode());
-        if(!(person.getId() == null) && (person.getId() == 0)) {
-            System.out.println("ID:        " + MessageType.INFO.getCode() + person.getId() + MessageType.RESET.getCode());
-        }
     }
 
     private String showInputElement(String description) {

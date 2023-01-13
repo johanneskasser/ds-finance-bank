@@ -156,6 +156,7 @@ public class WildflyAuthDBHelper {
     InputStreamReader isr = new InputStreamReader(new FileInputStream(usersDb));
     users.load(isr);
     isr.close();
+    //System.out.println(users);
     MessageDigest md = null;
     try {
       md = MessageDigest.getInstance("MD5");
@@ -165,6 +166,7 @@ public class WildflyAuthDBHelper {
     }
     String passwordEntry = Hex.encodeHexString(md.digest((user+":ApplicationRealm:"+newPassword).getBytes())).toLowerCase();
     users.put(user, passwordEntry);
+    //System.out.println(users);
     PrintWriter pw = new PrintWriter(usersDb);
     users.store(pw,initialComment);
     pw.close();

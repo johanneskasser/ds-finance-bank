@@ -307,7 +307,8 @@ public class BankServerImpl implements BankServer {
                     customerEntities.get(0).getID(),
                     customerEntities.get(0).getFirstName(),
                     customerEntities.get(0).getLastName(),
-                    customerEntities.get(0).getUserName()
+                    customerEntities.get(0).getUserName(),
+                    customerEntities.get(0).getPwHash()
                     );
         }
     }
@@ -370,7 +371,7 @@ public class BankServerImpl implements BankServer {
         List<String> pwAndSalt = pwHash.createSaltAndHashPassword(person.getPassword());
         String plainTextPassword = person.getPassword();
         person.setPassword(pwAndSalt.get(1));
-        if(!employeeEntities.isEmpty() && !customerEntity.isEmpty()) {
+        if(!employeeEntities.isEmpty() || !customerEntity.isEmpty()) {
             try {
                 wildflyAuthDBHelper.changePassword(person.getUserName(), plainTextPassword);
             } catch (IOException ioException) {
@@ -405,6 +406,27 @@ public class BankServerImpl implements BankServer {
         } catch (TradingWSException_Exception webServiceException) {
             throw new BankServerException(webServiceException.getMessage(), BankServerExceptionType.WEBSERVICE_FAULT);
         }
+    }
+
+    @RolesAllowed({"employee"})
+    public boolean deleteUser(Person person) throws BankServerException {
+        this.loggedInUser = getLoggedInUser();
+        if(person.getUserName().equals(this.loggedInUser.getUserName())) {
+            throw new BankServerException("Cannot delete own User.", BankServerExceptionType.SESSION_FAULT);
+        }
+
+        List<TransactionEntity> transactionEntities = transactionEntityDAO.getTransactionsByID(person.getId());
+        if(transactionEntities.isEmpty()) {
+            try {
+                wildflyAuthDBHelper.removeUser(person.getUserName());
+            } catch (IOException ioException) {
+                throw new BankServerException("Error while trying to delete user from Wildfly DB " + ioException.getMessage(), BankServerExceptionType.WEBSERVER_FAULT);
+            }
+            customerEntityDAO.removeUserByID(person.getId());
+            employeeEntityDAO.removeUserByID(person.getId());
+            return true;
+        }
+        return false;
     }
 
 }

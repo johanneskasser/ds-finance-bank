@@ -23,6 +23,11 @@ public class Customer extends Person implements Serializable {
         super.setId(ID);
     }
 
+    public Customer(int ID, String firstName, String lastName, String userName, String password) {
+        super(firstName, lastName, userName, password);
+        super.setId(ID);
+    }
+
     public void setPerson(Person person) {
         setUserName(person.getUserName());
         setFirstName(person.getFirstName());

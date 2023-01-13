@@ -36,5 +36,20 @@ public class EmployeeEntityDAO {
                 .executeUpdate();
     }
 
+    public List<EmployeeEntity> findbyID(int id) {
+        return entityManager.createQuery("select p from EmployeeEntity p where p.ID = :id", EmployeeEntity.class)
+                .setParameter("id", id)
+                .getResultList();
+    }
+
+    public void removeUserByID(int id) {
+        List<EmployeeEntity> employeeEntities = findbyID(id);
+        if(!employeeEntities.isEmpty()) {
+            entityManager.createQuery("DELETE from EmployeeEntity c where c.id = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        }
+    }
+
 
 }

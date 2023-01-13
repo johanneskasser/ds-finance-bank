@@ -48,4 +48,13 @@ public class CustomerEntityDAO {
                 .setParameter("lastname", lastname)
                 .getResultList();
     }
+
+    public void removeUserByID(int id) {
+        List<CustomerEntity> customerEntities = findbyID(id);
+        if(!customerEntities.isEmpty()) {
+            entityManager.createQuery("DELETE from CustomerEntity c where c.id = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        }
+    }
 }
