@@ -30,6 +30,9 @@ import java.util.Arrays;
 import java.util.List;
 
 
+/**
+ * BankServer Implementation, EJB Bean Declaration
+ */
 @Stateless(name="BankServer")
 @PermitAll
 public class BankServerImpl implements BankServer {
@@ -39,12 +42,19 @@ public class BankServerImpl implements BankServer {
     private Person loggedInUser;
     private final PWHash pwHash = new PWHash();
 
+    /**
+     * Injection of DataAccessObjects utilized during implementation
+     */
     @Inject CustomerEntityDAO customerEntityDAO;
     @Inject EmployeeEntityDAO employeeEntityDAO;
     @Inject TransactionEntityDAO transactionEntityDAO;
     @Inject BankBudgetEntityDAO bankBudgetEntityDAO;
     @Resource private SessionContext sessionContext;
 
+    /**
+     * BankserverImpl Construtor, Trading WS gets initialized upon constructions as well as Password Hasher Class
+     * @throws BankServerException
+     */
     public BankServerImpl() throws BankServerException {
         this.tradingWebService = initTradingService();
         this.pwHash.init();
@@ -155,6 +165,13 @@ public class BankServerImpl implements BankServer {
     }
 
 
+    /**
+     * Method to retrieve Stocks by Stockname (Company Name)
+     * Employees and Customers are allowed to execute Method
+     * @param stockname String
+     * @return List of Stocks
+     * @throws BankServerException if WebService Fails
+     */
     @RolesAllowed({"employee", "customer"})
     public List<Stock> listStock(String stockname)  throws BankServerException{
         List<Stock> stock = new ArrayList<>();
@@ -177,6 +194,15 @@ public class BankServerImpl implements BankServer {
     }
 
 
+    /**
+     * Internal Method used by Sell Stock Methods to actually sell a stock
+     * @param share stock to sell
+     * @param customer_id id of customer which wants to sell stock
+     * @param shares amount of shares to sell
+     * @param transactionID unique identifier of transaction ID for DB
+     * @return Big Decimal Sell Price
+     * @throws BankServerException If Web Service fails of DB Fails
+     */
     BigDecimal sell_stock(String share, int customer_id, int shares, int transactionID) throws BankServerException {
         bankBudgetEntityDAO.persist();
         try {
@@ -200,6 +226,14 @@ public class BankServerImpl implements BankServer {
 
     }
 
+    /**
+     * Internal Method used by Buy Stock Methods to actually sell a stock
+     * @param share Symbol of Stock to buy
+     * @param customer Customer who wants to buy Stock
+     * @param shares Amount of Shares the customer wants to buy
+     * @return Big Decimal of BuyPrivce per Stock
+     * @throws BankServerException If WS Failes or DB Fails --> Can be retrieved from the Error Message
+     */
     BigDecimal buy_stock(String share, Customer customer, int shares) throws BankServerException {
         bankBudgetEntityDAO.persist();
         try {
@@ -228,29 +262,63 @@ public class BankServerImpl implements BankServer {
 
     }
 
+    /**
+     * Buy Method which a customer calls, this means that the user logged in is automatically the one who buys shares --> so
+     * no customer can buy stocks for other customer
+     * @param share Share Customer wants to buy
+     * @param shares Share Amount Customer wants to buy
+     * @return Big Decimal Buy Price per Share
+     * @throws BankServerException If Execption gets thrown by buy_stock
+     */
     @RolesAllowed({"customer"})
     public BigDecimal buy(String share, int shares) throws BankServerException {
         this.loggedInUser = getLoggedInUser();
         return buy_stock(share, new Customer(this.loggedInUser), shares);
     }
 
+    /**
+     * Sell Method which a customer calls, this means that the user logged in is automatically the one who sells shares --> so
+     * no customer can sell stocks for other customer
+     * @param share share to sell
+     * @param shares amount of shares to sell
+     * @param transactionID Transaction ID of Transaction from Customer --> Used for DB
+     * @return BigDecimal Sell Price
+     * @throws BankServerException If sell_stock throws Exception
+     */
     @RolesAllowed({"customer"})
     public BigDecimal sell(String share, int shares, int transactionID) throws BankServerException{
         this.loggedInUser = getLoggedInUser();
         return sell_stock(share, loggedInUser.getId(), shares, transactionID);
     }
 
+    /**
+     * List Depot for Customer
+     * @return List of Transactions for specific Customer
+     * @throws BankServerException if Error in DB Occurs
+     */
     @RolesAllowed({"customer"})
     public List<Transaction> listDepot() throws BankServerException {
         loggedInUser = getLoggedInUser();
         return listDepotInternal(loggedInUser.getId());
     }
 
+    /**
+     * List Depot for Customer from Employee
+     * @param customer_id ID of Customer whose Depot should be Shown
+     * @return List of Transactions for specific Customer
+     * @throws BankServerException if Error in DB Occurs
+     */
     @RolesAllowed({"employee"})
     public List<Transaction> listDepot(int customer_id) throws BankServerException {
         return listDepotInternal(customer_id);
     }
 
+    /**
+     * Internal Method to List Depot called by the Employee or Customer Functions to perform the lookup
+     * @param customerID ID Of customer which Depot should be looked up
+     * @return List of Transactions for CustomerID
+     * @throws BankServerException if Error in DB Occurs
+     */
     private List<Transaction> listDepotInternal(int customerID) throws BankServerException {
         List<TransactionEntity> transactionEntities = transactionEntityDAO.getTransactionsByID(customerID);
         List<Transaction> transactions = new ArrayList<>();
@@ -269,6 +337,14 @@ public class BankServerImpl implements BankServer {
         return transactions;
     }
 
+    /**
+     * Buy for customer which gets performed by Employee
+     * @param share Share Customer wants to buy
+     * @param customer_id Customer ID
+     * @param shares Amount of Shares
+     * @return Buy Price
+     * @throws BankServerException if error in DB or WS occurs
+     */
     @RolesAllowed({"employee"})
     public BigDecimal buy_for_customer(String share, int customer_id, int shares) throws BankServerException {
         BigDecimal a;
@@ -295,11 +371,25 @@ public class BankServerImpl implements BankServer {
         }
     }
 
+    /**
+     * Sell Share for Customer performed by Employee
+     * @param share Share Customer wants to sell
+     * @param customer_id ID of acting Customer
+     * @param shares Amount of Shares Customer wants to sell
+     * @param transactionID Transaction ID used for DB
+     * @return Buy Price
+     * @throws BankServerException If error in WS or DB Occurs
+     */
     @RolesAllowed({"employee"})
     public BigDecimal sell_for_customer(String share, int customer_id, int shares, int transactionID) throws BankServerException {
         return sell_stock(share,customer_id,shares, transactionID);
     }
 
+    /**
+     * Search Customer by ID
+     * @param customer_id ID of Customer to be searched
+     * @return Customer (if no customer is found empty Customer is returned with ID of 0)
+     */
     @RolesAllowed({"employee"})
     public Customer search_customer_with_id(int customer_id) {
         List<CustomerEntity> customerEntities = customerEntityDAO.findbyID(customer_id);
@@ -323,6 +413,12 @@ public class BankServerImpl implements BankServer {
         }
     }
 
+    /**
+     * Search Customer with Name
+     * @param first_name First Name
+     * @param last_name Last Name
+     * @return Customer (if no customer is found empty Customer is returned with ID of 0)
+     */
     @RolesAllowed({"employee"})
     public List<Customer> search_customer_with_name(String first_name, String last_name) {
         List<Customer> customers = new ArrayList<>();
@@ -349,6 +445,10 @@ public class BankServerImpl implements BankServer {
         return customers;
     }
 
+    /**
+     * Get Available Budget from Bank at Stock Exchange performed by Employee
+     * @return Double --> Available Budget
+     */
     @RolesAllowed({"employee"})
     public Double getAvailableBudget() {
         bankBudgetEntityDAO.persist();
@@ -394,6 +494,7 @@ public class BankServerImpl implements BankServer {
     /**
      * Method to update the User-Informations of a person
      * Can be performed by employees and costumers
+     * Note: PW Will always get hashed newly, so a new salt will be generated and persisted every time the method is called
      * @param person Person Object with the updated information
      * @return returns a boolean: true=successfully updated / false=not updated
      * @throws BankServerException throws an exception if:
