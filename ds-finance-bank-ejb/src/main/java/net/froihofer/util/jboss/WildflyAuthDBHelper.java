@@ -126,6 +126,14 @@ public class WildflyAuthDBHelper {
     pw.close();
   }
 
+
+  /**
+   * Method to remove a User from the wildfly server
+   * @param user username to be deleted
+   * @param usersDb Users DB-File to be changed
+   * @param rolesDb Roles DB-File to be changed
+   * @throws IOException throws an exception if a DB-file cannot be found
+   */
   private void removeUserFromDBs(String user, File usersDb, File rolesDb) throws IOException {
     //Process usersDB
     String initialComment = getInitialCommentFromPropertiesFile(usersDb);
@@ -148,6 +156,14 @@ public class WildflyAuthDBHelper {
     rolesProps.store(pw,initialComment);
     pw.close();
   }
+
+  /**
+   * Method to change the Password of a User on the Wildfly Server
+   * @param user username of which the password should be changed
+   * @param newPassword new Password to be set
+   * @param usersDb Users DBFile to be changed
+   * @throws IOException throws an exception if a DB-file cannot be found
+   */
 
   private void changeUserPassword(String user, String newPassword, File usersDb) throws IOException {
     //Process usersDB
