@@ -369,6 +369,10 @@ public class UserInterface {
         endOfModuleChoices();
     }
 
+    /**
+     * method to display bought stocks of this user
+     * @throws BankServerException inherits it from endOfModuleChoices()
+     */
     private void showDepot() throws BankServerException {
         setModuleHeadline("Show personal Depot");
         showResponseMessage("Depot for " + loggedInUser.getFullName() + ":", MessageType.INFO);
@@ -377,6 +381,10 @@ public class UserInterface {
         endOfModuleChoices();
     }
 
+    /**
+     * method to sell a bought share by inputing the ID of the bought share and the amount
+     * @throws BankServerException inherits it from endOfModuleChoices()
+     */
     private void sellShare() throws BankServerException {
         setModuleHeadline("Sell Share");
         showResponseMessage("Depot for " + loggedInUser.getFullName() + ":", MessageType.INFO);
@@ -417,6 +425,10 @@ public class UserInterface {
         endOfModuleChoices();
     }
 
+    /**
+     * method to buy a share by inputing the symbol and the amount
+     * @throws BankServerException inherits this from endOfModuleChoices()
+     */
     private void buyShare() throws BankServerException {
         setModuleHeadline("Buy Share");
 
@@ -433,6 +445,10 @@ public class UserInterface {
         endOfModuleChoices();
     }
 
+    /**
+     * Method to look for available stocks by symbol
+     * @throws BankServerException inherits this exception from endOfModuleChoices()
+     */
     private void searchAvailableShare() throws BankServerException {
         setModuleHeadline("Search for available Shares");
         String input = showInputElement("Name a Stock to be shown");
@@ -445,6 +461,11 @@ public class UserInterface {
         endOfModuleChoices();
     }
 
+    /**
+     * method to display the menu choices = methods
+     * @param menuChoices list of methods available to the user
+     * @return returns the response of the user (0-9) depending on what method the user wants to access
+     */
     private Integer showMenu(List<String> menuChoices) {
         int response;
         int counter = 1;
@@ -462,6 +483,10 @@ public class UserInterface {
         return response;
     }
 
+    /**
+     * method to list available stocks, called in method searchAvailableShare() to search by symbol
+     * @param list this list contains the available stocks
+     */
     private void showListing(List<Stock> list) {
         int count = 1;
         for(Stock stockElement : list) {
@@ -471,6 +496,10 @@ public class UserInterface {
         }
     }
 
+    /**
+     * Method to display a created persons data either for searching or managing the information
+     * @param person is the person we want the information of
+     */
     private void showUserData(Person person) {
         if(!(person.getId() == null) && !(person.getId() == 0)) {
             System.out.println("ID:         " + MessageType.INFO.getCode() + person.getId() + MessageType.RESET.getCode());
@@ -493,6 +522,11 @@ public class UserInterface {
         }
     }
 
+    /**
+     * Shows the user what input is wanted (username:, etc.)
+     * @param description is the String that indicates what input is needed
+     * @return returns input of the user
+     */
     private String showInputElement(String description) {
         System.out.print(description + ": ");
         String s = in.nextLine();
@@ -505,6 +539,10 @@ public class UserInterface {
         return "n/a";
     }
 
+    /**
+     * Scans the input of the user (0-9) to choose the right method in the UI
+     * @return returns the user input
+     */
     private Integer scan(){
         System.out.print("\n> ");
         String s = in.nextLine();
@@ -514,18 +552,38 @@ public class UserInterface {
         return -1;
     }
 
+
+    /**
+     * This method checks the size of the user inputs
+     * @param size defines the maximum size of the input
+     * @param input defines the number of letters/numbers in the user input
+     * @return
+     */
     private boolean checkInput(int size, int input) {
         return input < size && input > 0;
     }
 
+    /**
+     * Is used to define the headlines in the user interface
+     * @param headline is the string that is written in the headline
+     */
     private void setModuleHeadline(String headline) {
         System.out.println(MessageType.HEADLINE.getCode() + "\n" + headline + ":\n" + MessageType.RESET.getCode());
     }
 
+    /**
+     * Method is used to respond to the user
+     * @param message Responds with a string indicating what to do next
+     * @param messageType Defines the message type of the response (Error, Info, etc.)
+     */
     public void showResponseMessage(String message, MessageType messageType) {
         System.out.println(messageType.getCode() + "\n" + message + "\n" + MessageType.RESET.getCode());
     }
 
+    /**
+     * This implies the end of a method
+     * @throws BankServerException inherited from showMainMenu()
+     */
     private void endOfModuleChoices() throws BankServerException {
         setModuleHeadline("Module completed. Select next step");
         int output = showMenu(Arrays.asList("Return to main Menu", "End Application"));
@@ -535,6 +593,10 @@ public class UserInterface {
         }
     }
 
+    /**
+     * Method to create a person
+     * @return returns that created person
+     */
     private Person inputPerson(UserType userType) {
         Person person = new Person();
         person.setFirstName(showInputElement("First Name"));
@@ -569,12 +631,20 @@ public class UserInterface {
         return person;
     }
 
+    /**
+     * confirms the input of the user
+     * @return this return value lets the user move on if the input is "Y"
+     */
     private boolean checkIfInputWasCorrect() {
         showResponseMessage("Is this input correct?", MessageType.INFO);
         String output = showInputElement("Y/N");
         return output.equalsIgnoreCase("Y");
     }
 
+    /**
+     * Shows all transactions, with the corresponding name, symbol, number of owned shares, and ID of the one who owns it
+     * @param transactionList the list where the transactions are contained in
+     */
     private void showTransactionsList(List<Transaction> transactionList) {
         int count = 1;
         double totalSum = 0;
