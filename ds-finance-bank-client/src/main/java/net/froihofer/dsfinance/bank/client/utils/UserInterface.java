@@ -541,6 +541,14 @@ public class UserInterface {
         setModuleHeadline("Buy Share");
 
         String input = showInputElement("Symbol");
+
+        List<Stock> stockList = bankServer.listStock(input);
+        while (stockList.isEmpty()) {
+            showResponseMessage("Stock does not exist at Stock Exchange!", MessageType.ERROR);
+            input = showInputElement("Symbol");
+            stockList = bankServer.listStock(input);
+        }
+
         int input2 = savlyParseStringToInt(showInputElement("Amount"));
 
         BigDecimal success = bankServer.buy(input,input2);
