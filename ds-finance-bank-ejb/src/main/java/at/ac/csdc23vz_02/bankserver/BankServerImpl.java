@@ -355,6 +355,12 @@ public class BankServerImpl implements BankServer {
         return bankBudgetEntityDAO.getAvailableBudget();
     }
 
+    /**
+     * Method to get the currently logged-in User
+     * Can be performed by employees and costumers
+     * @return returns a Person Object of the currently logged-in User
+     * @throws BankServerException throws an exception if the user which is logged in could not be found in Database
+     */
     @RolesAllowed({"employee", "customer"})
     public Person getLoggedInUser() throws BankServerException {
         String username = sessionContext.getCallerPrincipal().getName();
@@ -385,6 +391,16 @@ public class BankServerImpl implements BankServer {
         }
     }
 
+    /**
+     * Method to update the User-Informations of a person
+     * Can be performed by employees and costumers
+     * @param person Person Object with the updated information
+     * @return returns a boolean: true=successfully updated / false=not updated
+     * @throws BankServerException throws an exception if:
+     *                                                  - inherited from createSaltAndHashPassword()
+     *                                                  - failed to change User Information in Wildfly Auth DB
+     *                                                  - User which is logged in could not be found in Database
+     */
     @RolesAllowed({"employee", "customer"})
     public boolean updateUser(Person person) throws BankServerException {
         List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(person.getUserName());
@@ -409,6 +425,12 @@ public class BankServerImpl implements BankServer {
         return true;
     }
 
+    /**
+     * Method to get all Stock Information for the input stock symbols
+     * @param symbols the stock symbols to search for
+     * @return returns a List of Stocks based on the input symbols
+     * @throws BankServerException throws an exception if the tradingWebService returns an exception
+     */
     private List<Stock> findStockBySymbol(List<String> symbols) throws BankServerException{
         try {
             List<PublicStockQuote> publicStockQuotes = tradingWebService.getStockQuotes(symbols);
@@ -429,6 +451,15 @@ public class BankServerImpl implements BankServer {
         }
     }
 
+    /**
+     * Method to delete a User from the Database and the Wildfly-Server
+     * Can be performed by employees
+     * @param person Person Object to be deleted
+     * @return returns a boolean: true=user successfully deleted / false=user not deleted
+     * @throws BankServerException Throws an exception:
+     *                                                 - if the own user should be deleted
+     *                                                 - if there is an error while trying to delete user from Wildfly DB
+     */
     @RolesAllowed({"employee"})
     public boolean deleteUser(Person person) throws BankServerException {
         this.loggedInUser = getLoggedInUser();
