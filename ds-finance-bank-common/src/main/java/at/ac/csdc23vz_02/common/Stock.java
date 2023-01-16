@@ -29,6 +29,7 @@ public class Stock implements Serializable {
     of the class using the 'this' keyword. The constructor is called when a new Stock object is created and
     it is used to initialize the fields of the object with the provided values.
      */
+
     public Stock(String companyName, Double lastTradePrice, Date lastTradeTime, Long marketCapitalization, String stockExchange, String symbol) {
         this.companyName = companyName;
         this.lastTradePrice = lastTradePrice;

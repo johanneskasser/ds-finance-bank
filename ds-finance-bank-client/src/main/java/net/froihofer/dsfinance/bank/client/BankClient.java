@@ -16,16 +16,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Main class for starting the bank client.
- *
+ * initial BankClient for User Communication
  */
 public class BankClient {
+
+  /**
+   * Logger
+   */
   private static Logger log = LoggerFactory.getLogger(BankClient.class);
+
+  /**
+   * BankServer Object to be communicated with
+   */
   private static BankServer bankServer;
+
+  /**
+   * to be used UserInterface Object
+   */
   UserInterface userInterface;
 
   /**
-   * Skeleton method for performing an RMI lookup
+   * method for performing an RMI lookup
+   * @param userName Username for the Authentication at the BankServer
+   * @param userPassword Password for the Authentication at the BankServer
+   * @return returns a boolean: true=successful authentication / false=unsuccessful authentication
    */
   public boolean getRmiProxy(String userName, String userPassword) {
     AuthCallbackHandler.setUsername(userName);
@@ -45,6 +59,10 @@ public class BankClient {
     }
   }
 
+  /**
+   * method to initialise the UserInterface and set all the credentials
+   * @throws BankServerException throws an exception if the UserInterface init()-Method throws an exception
+   */
   public void run() throws BankServerException {
     userInterface = new UserInterface();
     List<String> credentials = userInterface.startLogin();
@@ -55,6 +73,11 @@ public class BankClient {
     userInterface.init(bankServer, credentials, this);
   }
 
+  /**
+   * main method to start the client
+   * @param args main
+   * @throws BankServerException inherited from client.run()
+   */
   public static void main(String[] args) throws BankServerException {
     BankClient client = new BankClient();
     client.run();
