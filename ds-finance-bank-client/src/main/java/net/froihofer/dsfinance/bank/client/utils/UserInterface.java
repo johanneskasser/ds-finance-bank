@@ -203,7 +203,7 @@ public class UserInterface {
      */
     private void showDepotForCustomer() throws BankServerException {
         setModuleHeadline("Show Depot for Customer");
-        int id = Integer.parseInt(showInputElement("ID of Customer"));
+        int id = savlyParseStringToInt(showInputElement("ID of Customer"));
         printDepot(id);
         endOfModuleChoices();
     }
@@ -233,10 +233,10 @@ public class UserInterface {
      */
     private void sellShareforCustomer() throws BankServerException{
         setModuleHeadline("Sell Share for Customer");
-        int id = Integer.parseInt(showInputElement("ID of Customer"));
+        int id = savlyParseStringToInt(showInputElement("ID of Customer"));
         List<Transaction> transactions = printDepot(id);
-        int transactionID = Integer.parseInt(showInputElement("Input ID of Share you want to sell"));
-        int sharesToSell = Integer.parseInt(showInputElement("Amount of shares you want to sell"));
+        int transactionID = savlyParseStringToInt(showInputElement("Input ID of Share you want to sell"));
+        int sharesToSell = savlyParseStringToInt(showInputElement("Amount of shares you want to sell"));
         int finalTransactionID = transactionID;
         Transaction transaction = transactions.stream()
                 .filter(transaction1 -> transaction1.getID() == finalTransactionID)
@@ -244,7 +244,7 @@ public class UserInterface {
                 .orElse(null);
         while (transaction == null) {
             showResponseMessage("No Transaction with the following ID found!", MessageType.ERROR);
-            transactionID = Integer.parseInt(showInputElement("Input ID of Share you want to sell"));
+            transactionID = savlyParseStringToInt(showInputElement("Input ID of Share you want to sell"));
             int finalTransactionID1 = transactionID;
             transaction = transactions.stream()
                     .filter(transaction1 -> finalTransactionID1 == transaction1.getID())
@@ -254,7 +254,7 @@ public class UserInterface {
 
         while (transaction.getShareCount() < sharesToSell) {
             showResponseMessage("You can only sell as much shares as you own.", MessageType.ERROR);
-            sharesToSell = Integer.parseInt(showInputElement("Amount of shares you want to sell"));
+            sharesToSell = savlyParseStringToInt(showInputElement("Amount of shares you want to sell"));
         }
         BigDecimal success = bankServer.sell_for_customer(transaction.getStocksymbol() , id, sharesToSell, transactionID);
 
@@ -272,9 +272,30 @@ public class UserInterface {
      */
     private void buyShareforCustomer() throws BankServerException {
         setModuleHeadline("Buy Share for Customer");
+
         String input = showInputElement("Share Symbol");
-        int input1 = Integer.parseInt(showInputElement("User ID"));
-        int input2 = Integer.parseInt(showInputElement("Amount"));
+
+        List<Stock> stockList = bankServer.listStock(input);
+
+        while (stockList.isEmpty()) {
+            showResponseMessage("Share was not found!", MessageType.ERROR);
+            input = showInputElement("Share Symbol");
+            stockList = bankServer.listStock(input);
+        }
+
+        int input1 = savlyParseStringToInt(showInputElement("User ID"));
+
+        Customer customers = bankServer.search_customer_with_id(input1);
+
+        while(customers.getId() == 0) {
+            showResponseMessage("User with given ID was not found!", MessageType.ERROR);
+            input1 = savlyParseStringToInt(showInputElement("User ID"));
+            customers = bankServer.search_customer_with_id(input1);
+        }
+
+        int input2 = savlyParseStringToInt(showInputElement("Amount"));
+
+
 
         BigDecimal success = bankServer.buy_for_customer(input,input1,input2);
 
@@ -297,7 +318,7 @@ public class UserInterface {
         ));
         if(output == 1) {
             showResponseMessage("Only enter Integer Numbers!", MessageType.INFO);
-            int id = Integer.parseInt(showInputElement("ID"));
+            int id = savlyParseStringToInt(showInputElement("ID"));
             Customer customer = bankServer.search_customer_with_id(id);
             if(customer.getId() == 0) {
                 showResponseMessage("No User Found!", MessageType.ERROR);
@@ -477,8 +498,8 @@ public class UserInterface {
         showResponseMessage("Depot for " + loggedInUser.getFullName() + ":", MessageType.INFO);
         List<Transaction> transactionList = bankServer.listDepot();
         showTransactionsList(transactionList);
-        int transactionID = Integer.parseInt(showInputElement("Input ID of Share you want to sell"));
-        int sharesToSell = Integer.parseInt(showInputElement("Amount of shares you want to sell"));
+        int transactionID = savlyParseStringToInt(showInputElement("Input ID of Share you want to sell"));
+        int sharesToSell = savlyParseStringToInt(showInputElement("Amount of shares you want to sell"));
         int finalTransactionID = transactionID;
         Transaction transaction = transactionList.stream()
                 .filter(transaction1 -> transaction1.getID() == finalTransactionID)
@@ -486,7 +507,7 @@ public class UserInterface {
                 .orElse(null);
         while (transaction == null) {
             showResponseMessage("No Transaction with the following ID found!", MessageType.ERROR);
-            transactionID = Integer.parseInt(showInputElement("Input ID of Share you want to sell"));
+            transactionID = savlyParseStringToInt(showInputElement("Input ID of Share you want to sell"));
             int finalTransactionID1 = transactionID;
             transaction = transactionList.stream()
                     .filter(transaction1 -> finalTransactionID1 == transaction1.getID())
@@ -496,7 +517,7 @@ public class UserInterface {
 
         while (transaction.getShareCount() < sharesToSell) {
             showResponseMessage("You can only sell as much shares as you own.", MessageType.ERROR);
-            sharesToSell = Integer.parseInt(showInputElement("Amount of shares you want to sell"));
+            sharesToSell = savlyParseStringToInt(showInputElement("Amount of shares you want to sell"));
         }
         BigDecimal success = bankServer.sell(transaction.getStocksymbol(), sharesToSell, transactionID);
 
@@ -520,7 +541,7 @@ public class UserInterface {
         setModuleHeadline("Buy Share");
 
         String input = showInputElement("Symbol");
-        int input2 = Integer.parseInt(showInputElement("Amount"));
+        int input2 = savlyParseStringToInt(showInputElement("Amount"));
 
         BigDecimal success = bankServer.buy(input,input2);
 
@@ -596,16 +617,16 @@ public class UserInterface {
         System.out.println("Username:   " + MessageType.INFO.getCode() + person.getUserName() + MessageType.RESET.getCode());
         System.out.println();
         if(!(person.getStreet() == null) && !(person.getNumber() == null)) {
-            System.out.println("Street/Number:   " + MessageType.INFO.getCode() + person.getStreet() + " " + person.getNumber() + MessageType.RESET.getCode());
+            System.out.println("Street/Number:        " + MessageType.INFO.getCode() + person.getStreet() + " " + person.getNumber() + MessageType.RESET.getCode());
         }
         if(!(person.getCity() == null)) {
-            System.out.println("City:   " + MessageType.INFO.getCode() + person.getCity() + MessageType.RESET.getCode());
+            System.out.println("City:                 " + MessageType.INFO.getCode() + person.getCity() + MessageType.RESET.getCode());
         }
         if(!(person.getZip() == null)) {
-            System.out.println("ZIP:   " + MessageType.INFO.getCode() + person.getZip() + MessageType.RESET.getCode());
+            System.out.println("ZIP:                  " + MessageType.INFO.getCode() + person.getZip() + MessageType.RESET.getCode());
         }
         if(!(person.getCountry() == null)) {
-            System.out.println("Country:   " + MessageType.INFO.getCode() + person.getCountry() + MessageType.RESET.getCode());
+            System.out.println("Country:              " + MessageType.INFO.getCode() + person.getCountry() + MessageType.RESET.getCode());
         }
     }
 
@@ -750,6 +771,18 @@ public class UserInterface {
         } else {
             showResponseMessage("No bought Stocks found!", MessageType.ERROR);
         }
+    }
+
+    private int savlyParseStringToInt(String in) {
+        int out = 0;
+        try {
+            out = Integer.parseInt(in);
+        } catch (NumberFormatException numberFormatException) {
+            showResponseMessage("Please only enter Numbers!", MessageType.ERROR);
+            String newIn = showInputElement("Enter number again");
+            savlyParseStringToInt(newIn);
+        }
+        return out;
     }
 
 }
