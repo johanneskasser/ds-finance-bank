@@ -592,7 +592,7 @@ public class UserInterface {
         response = scan();
 
         while (!checkInput(menuChoices.size() + 1, response)) {
-            System.out.println("Invalid Input!");
+            showResponseMessage("Invalid Input!", MessageType.ERROR);
             response = scan();
         }
 
