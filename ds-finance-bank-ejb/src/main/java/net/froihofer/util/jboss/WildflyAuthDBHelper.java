@@ -185,11 +185,22 @@ public class WildflyAuthDBHelper {
     addUserToDBs(user,password,roles,applicationUsersDbStandalone,rolesDbStandalone);
     //addUserToDBs(user,password,roles,applicationUsersDbDomain,rolesDbDomain);
   }
-  
+
+  /**
+   * Removes User from JBoss authentication database
+   * @param user Username of User
+   * @throws IOException if errors pop up during file access
+   */
   public void removeUser(String user) throws IOException {
     removeUserFromDBs(user, applicationUsersDbStandalone, rolesDbStandalone);
   }
 
+  /**
+   * Change User Password
+   * @param user Username which should be edited
+   * @param password Password of User to be set newly
+   * @throws IOException
+   */
   public void changePassword(String user, String password) throws IOException {
     changeUserPassword(user, password, applicationUsersDbStandalone);
   }
