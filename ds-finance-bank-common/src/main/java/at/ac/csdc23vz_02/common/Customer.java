@@ -19,15 +19,15 @@ public class Customer extends Person implements Serializable {
 
     /**
      * Constructor for Customer that calls a constructor from the person class
-     * @param firstName
-     * @param lastName
-     * @param userName
-     * @param password
-     * @param zip
-     * @param country
-     * @param street
-     * @param number
-     * @param city
+     * @param firstName first name of customer
+     * @param lastName last name of customer
+     * @param userName username of customer
+     * @param password password of customer
+     * @param zip ZIP code of customer
+     * @param country country of customer
+     * @param street street of customer
+     * @param number street number of customer
+     * @param city city of customer
      */
     public Customer(String firstName, String lastName, String userName, String password,  String zip, String country, String street, String number, String city) {
         super(firstName, lastName, userName, password, zip, country, street, number, city);
