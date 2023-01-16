@@ -8,19 +8,48 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
+/**
+ * Is used for user interaction with the CLI to use the BankServer functionalities.
+ */
 public class UserInterface {
 
+    /**
+     * BankServer Object
+     */
     private BankServer bankServer;
+
+    /**
+     * used to read user input
+     */
     private final Scanner in = new Scanner(System.in);
+
+    /**
+     * used to set user type to customer
+     */
     private UserType userType = UserType.CUSTOMER;
+
+    /**
+     * Person Object
+     */
     private Person loggedInUser;
 
+    /**
+     * BankServer Object
+     */
     private BankClient bankClient;
 
 
+    /**
+     * constructor
+     */
     public UserInterface() {
     }
 
+
+    /**
+     * Used to list start screen options
+     * @return
+     */
     public List<String> startLogin() {
         List<String> credentials = new ArrayList<>();
         setModuleHeadline("====== WELCOME ======");
@@ -29,7 +58,13 @@ public class UserInterface {
         credentials.add(showInputElement("Password"));
         return credentials;
     }
-
+    /**
+     * Used to initialize Main Menu
+     * @param bankServer
+     * @param credentials
+     * @param bankClient1
+     * @throws BankServerException inherited from showMainMenu()
+     */
     public void init(BankServer bankServer, List<String> credentials, BankClient bankClient1) throws BankServerException {
         this.bankClient = bankClient1;
         this.bankServer = bankServer;
@@ -37,7 +72,10 @@ public class UserInterface {
             showMainMenu();
         }
     }
-
+    /**
+     * used to start register process
+     * @throws BankServerException inherited from endOfModuleChoices()
+     */
 
     private void startRegisterProcess() throws BankServerException {
         Customer customer = new Customer();
@@ -68,6 +106,11 @@ public class UserInterface {
             }
         }
     }
+    /**
+     * Used to log user in
+     * @param credentials
+     * @return
+     */
 
     private boolean login(List<String> credentials){
         try {
@@ -96,7 +139,10 @@ public class UserInterface {
         }
         return false;
     }
-
+    /**
+     * Shows main menu
+     * @throws BankServerException
+     */
     private void showMainMenu() throws BankServerException {
 
         if(this.userType == UserType.CUSTOMER) {
@@ -140,7 +186,10 @@ public class UserInterface {
             }
         }
     }
-
+    /**
+     * Shows available budget
+     * @throws BankServerException inherited from endOfModuleChoices()
+     */
     private void showAvailableBudget() throws BankServerException {
         setModuleHeadline("Available Budget from Bank at Stock Exchange");
         double availBudget = bankServer.getAvailableBudget();
@@ -148,14 +197,22 @@ public class UserInterface {
         showResponseMessage("Available Budget: €" + bigDecimal.setScale(2, RoundingMode.HALF_EVEN), MessageType.INFO);
         endOfModuleChoices();
     }
-
+    /**
+     * shows depot for customer
+     * @throws BankServerException inherited from endOfModuleChoices()
+     */
     private void showDepotForCustomer() throws BankServerException {
         setModuleHeadline("Show Depot for Customer");
         int id = Integer.parseInt(showInputElement("ID of Customer"));
         printDepot(id);
         endOfModuleChoices();
     }
-
+    /**
+     * prints depot
+     * @param id
+     * @return
+     * @throws BankServerException
+     */
     private List<Transaction> printDepot(int id) throws BankServerException {
         Customer customer = bankServer.search_customer_with_id(id);
         List<Transaction> transactions = new ArrayList<>();
@@ -170,6 +227,10 @@ public class UserInterface {
         return transactions;
     }
 
+    /**
+     * used to sell share for customer
+     * @throws BankServerException inherited from endOfModuleChoices()
+     */
     private void sellShareforCustomer() throws BankServerException{
         setModuleHeadline("Sell Share for Customer");
         int id = Integer.parseInt(showInputElement("ID of Customer"));
@@ -205,7 +266,10 @@ public class UserInterface {
         printDepot(id);
         endOfModuleChoices();
     }
-
+    /**
+     * used to buy share for customer
+     * @throws BankServerException inherited from endOfModuleChoices()
+     */
     private void buyShareforCustomer() throws BankServerException {
         setModuleHeadline("Buy Share for Customer");
         String input = showInputElement("Share Symbol");
@@ -221,7 +285,10 @@ public class UserInterface {
         }
         endOfModuleChoices();
     }
-
+    /**
+     * used to search for customer
+     * @throws BankServerException inherited from endOfModuleChoices()
+     */
     private void searchCustomer() throws BankServerException {
         setModuleHeadline("Search Customer");
         int output = showMenu(Arrays.asList(
@@ -268,14 +335,21 @@ public class UserInterface {
         }
         endOfModuleChoices();
     }
-
+    /**
+     * used to log out
+     * @throws BankServerException inherited from endOfModuleChoices()
+     */
     private void logout() throws BankServerException {
         setModuleHeadline("Logout");
         bankClient.run();
         showResponseMessage("Not implemented yet!", MessageType.ERROR);
         endOfModuleChoices();
     }
-
+    /**
+     * used to manage personal data
+     * @param person
+     * @throws BankServerException inherited from endOfModuleChoices()
+     */
     private void managePersonalData(Person person) throws BankServerException {
         setModuleHeadline("Manage Personal Data");
         showUserData(person);
@@ -292,6 +366,11 @@ public class UserInterface {
         }
         endOfModuleChoices();
     }
+    /**
+     * used to delete user
+     * @param person
+     * @throws BankServerException inherited from deleteUser()
+     */
 
     private void deleteUser(Person person) throws BankServerException {
         setModuleHeadline("Delete User: " + person.getFullName());
@@ -312,7 +391,11 @@ public class UserInterface {
 
 
     }
-
+    /**
+     * used to reset password
+     * @param person
+     * @throws BankServerException inherited by updateUser()
+     */
     private void resetPassword(Person person) throws BankServerException {
         showResponseMessage("Reset Password", MessageType.INFO);
         String newPwFirst = showInputElement("New password");
@@ -333,7 +416,11 @@ public class UserInterface {
         }
 
     }
-
+    /**
+     * used to update personal information
+     * @param person
+     * @throws BankServerException inherited by endOfModuleChoices()
+     */
     private void updatePersonalInformation(Person person) throws BankServerException {
         showResponseMessage("Update Personal Information", MessageType.INFO);
         int output = showMenu(Arrays.asList(
