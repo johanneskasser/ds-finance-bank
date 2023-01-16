@@ -9,33 +9,65 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 
+
+/**
+ * Creates the table with the table name Transaction and the corresponding entitites contained in that table
+ * It also specifies the columns for the table
+ */
 @Entity
 @Table(name="Transaction")
 public class TransactionEntity implements Serializable {
     private static final long serialVersionUID = -558553967080513790L;
 
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE) /** makes the ID unique */
+    /**
+     * Column for ID
+     */
     private Integer ID;
 
+    /**
+     * Column for costumer ID
+     */
     @Column(name = "customerID")
     private Integer customerID;
 
+    /**
+     * Column for Stocksymbol
+     */
     @Column(name = "StockSymbol")
     private String stockSymbol;
-
+    /**
+     * Column for CompanyName
+     */
     @Column(name = "CompanyName")
     private String companyName;
-
+    /**
+     * Column for ShareCount
+     */
     @Column(name = "ShareCount")
     private Integer shareCount;
-
+    /**
+     * Column for TradeTime
+     */
     @Column(name = "TradeTime")
     private Date tradeTime;
-
+    /**
+     * Column for BuyPrice
+     */
     @Column(name = "BuyPrice")
     private BigDecimal buyPrice;
 
+
+    /**
+     * Constructor for TransactionEntity
+     * @param customerID the unique ID for the customer
+     * @param stockSymbol unique stocksymbol
+     * @param companyName name of the Company
+     * @param shareCount the quantity of stockshare that the customer owns
+     * @param tradeTime the trading time
+     */
     public TransactionEntity(Integer customerID, String stockSymbol, String companyName, Integer shareCount, Date tradeTime, String tradeType) {
         this.customerID = customerID;
         this.stockSymbol = stockSymbol;
@@ -44,6 +76,9 @@ public class TransactionEntity implements Serializable {
         this.tradeTime = tradeTime;
     }
 
+    /**
+     * Constructor
+     */
     public TransactionEntity() {
 
     }
@@ -55,7 +90,10 @@ public class TransactionEntity implements Serializable {
         this.shareCount = shareCount;
         this.tradeTime = stock.getLastTradeTime();
     }
-
+    /**
+     * Method to get the price where the stock share is bought
+     * @return returns BuyPrice from the database
+     */
     public BigDecimal getBuyPrice() {
         return buyPrice;
     }
