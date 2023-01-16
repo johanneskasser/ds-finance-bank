@@ -45,7 +45,8 @@ public class UserInterface {
         setModuleHeadline("Register");
         int output = showMenu(Arrays.asList("Customer", "Employee"));
         if(output == 1) {
-            customer.setPerson(inputPerson());
+            setModuleHeadline("Register Customer");
+            customer.setPerson(inputPerson(UserType.CUSTOMER));
             try {
                 bankServer.createCustomer(customer);
                 showResponseMessage("User Created.", MessageType.SUCCESS);
@@ -55,7 +56,8 @@ public class UserInterface {
                 endOfModuleChoices();
             }
         } else {
-            employee.setPerson(inputPerson());
+            setModuleHeadline("Register Employee");
+            employee.setPerson(inputPerson(UserType.EMPLOYEE));
             try {
                 bankServer.createEmployee(employee);
                 showResponseMessage("User Created.", MessageType.SUCCESS);
@@ -234,7 +236,7 @@ public class UserInterface {
                 showResponseMessage("No User Found!", MessageType.ERROR);
             } else {
                 showResponseMessage("Customer found.", MessageType.SUCCESS);
-                Person person = new Person(customer.getFirstName(), customer.getLastName(), customer.getUserName(), customer.getPassword());
+                Person person = new Person(customer.getFirstName(), customer.getLastName(), customer.getUserName(), customer.getPassword(), customer.getZip(), customer.getCountry(), customer.getStreet(), customer.getNumber(), customer.getCity());
                 person.setId(customer.getId());
                 showUserData(person);
                 showResponseMessage("Next possible actions", MessageType.INFO);
@@ -258,7 +260,7 @@ public class UserInterface {
             } else {
                 showResponseMessage("Customers Found!", MessageType.SUCCESS);
                 for (Customer customer : customers) {
-                    Person person = new Person(customer.getFirstName(), customer.getLastName(), customer.getUserName(), null);
+                    Person person = new Person(customer.getFirstName(), customer.getLastName(), customer.getUserName(), customer.getPassword(),customer.getZip(), customer.getCountry(), customer.getStreet(), customer.getNumber(), customer.getCity());
                     person.setId(customer.getId());
                     showUserData(person);
                 }
@@ -476,6 +478,19 @@ public class UserInterface {
         System.out.println("First Name: " + MessageType.INFO.getCode() + person.getFirstName() + MessageType.RESET.getCode());
         System.out.println("Last Name:  " + MessageType.INFO.getCode() + person.getLastName() + MessageType.RESET.getCode());
         System.out.println("Username:   " + MessageType.INFO.getCode() + person.getUserName() + MessageType.RESET.getCode());
+        System.out.println();
+        if(!(person.getStreet() == null) && !(person.getNumber() == null)) {
+            System.out.println("Street/Number:   " + MessageType.INFO.getCode() + person.getStreet() + " " + person.getNumber() + MessageType.RESET.getCode());
+        }
+        if(!(person.getCity() == null)) {
+            System.out.println("City:   " + MessageType.INFO.getCode() + person.getCity() + MessageType.RESET.getCode());
+        }
+        if(!(person.getZip() == null)) {
+            System.out.println("ZIP:   " + MessageType.INFO.getCode() + person.getZip() + MessageType.RESET.getCode());
+        }
+        if(!(person.getCountry() == null)) {
+            System.out.println("Country:   " + MessageType.INFO.getCode() + person.getCountry() + MessageType.RESET.getCode());
+        }
     }
 
     private String showInputElement(String description) {
@@ -520,7 +535,7 @@ public class UserInterface {
         }
     }
 
-    private Person inputPerson() {
+    private Person inputPerson(UserType userType) {
         Person person = new Person();
         person.setFirstName(showInputElement("First Name"));
         person.setLastName(showInputElement("Last Name"));
@@ -533,6 +548,24 @@ public class UserInterface {
             pwSecond = showInputElement("Repeat Password");
         }
         person.setPassword(pwFirst);
+        if(userType == UserType.CUSTOMER) {
+            person.setStreet(showInputElement("Street"));
+            String housenumber = showInputElement("Number");
+            while(housenumber.contains("[1-9/]+")) {
+                showResponseMessage("Please only enter Numbers or /!", MessageType.ERROR);
+                housenumber = showInputElement("Number");
+            }
+            person.setNumber(housenumber);
+            String zip = showInputElement("ZIP");
+            while (zip.contains("[0-9]+")) {
+                showResponseMessage("Please only enter Numbers!", MessageType.ERROR);
+                zip = showInputElement("ZIP");
+            }
+            person.setZip(zip);
+            person.setCity(showInputElement("City"));
+            person.setCountry(showInputElement("Country"));
+        }
+
         return person;
     }
 

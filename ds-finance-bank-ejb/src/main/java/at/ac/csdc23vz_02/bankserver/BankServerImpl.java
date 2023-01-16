@@ -279,7 +279,12 @@ public class BankServerImpl implements BankServer {
                         customerEntities.get(0).getID(),
                         customerEntities.get(0).getFirstName(),
                         customerEntities.get(0).getLastName(),
-                        customerEntities.get(0).getUserName())
+                        customerEntities.get(0).getUserName(),
+                        customerEntities.get(0).getZip(),
+                        customerEntities.get(0).getCountry(),
+                        customerEntities.get(0).getStreet(),
+                        customerEntities.get(0).getNumber(),
+                        customerEntities.get(0).getCity())
                         , shares);
                 return a;
             } else {
@@ -308,7 +313,12 @@ public class BankServerImpl implements BankServer {
                     customerEntities.get(0).getFirstName(),
                     customerEntities.get(0).getLastName(),
                     customerEntities.get(0).getUserName(),
-                    customerEntities.get(0).getPwHash()
+                    customerEntities.get(0).getPwHash(),
+                    customerEntities.get(0).getZip(),
+                    customerEntities.get(0).getCountry(),
+                    customerEntities.get(0).getStreet(),
+                    customerEntities.get(0).getNumber(),
+                    customerEntities.get(0).getCity()
                     );
         }
     }
@@ -327,7 +337,12 @@ public class BankServerImpl implements BankServer {
                         customer.getID(),
                         customer.getFirstName(),
                         customer.getLastName(),
-                        customer.getUserName()
+                        customer.getUserName(),
+                        customer.getZip(),
+                        customer.getCountry(),
+                        customer.getStreet(),
+                        customer.getNumber(),
+                        customer.getCity()
                 ));
             }
         }
@@ -358,7 +373,13 @@ public class BankServerImpl implements BankServer {
                     customerEntity.get(0).getFirstName(),
                     customerEntity.get(0).getLastName(),
                     customerEntity.get(0).getUserName(),
-                    customerEntity.get(0).getPwHash());
+                    customerEntity.get(0).getPwHash(),
+                    customerEntity.get(0).getZip(),
+                    customerEntity.get(0).getCountry(),
+                    customerEntity.get(0).getStreet(),
+                    customerEntity.get(0).getNumber(),
+                    customerEntity.get(0).getCity()
+            );
         } else {
             throw new BankServerException("User which is logged in could not be found in Database!", BankServerExceptionType.SESSION_FAULT);
         }

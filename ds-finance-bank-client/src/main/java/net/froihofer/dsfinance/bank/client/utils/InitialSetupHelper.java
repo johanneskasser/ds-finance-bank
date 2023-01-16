@@ -28,8 +28,8 @@ import java.util.Properties;
  */
 public class InitialSetupHelper {
     private static Logger log = LoggerFactory.getLogger(InitialSetupHelper.class);
-    private Customer customer = new Customer("Cust", "Cust", "Cust", "Cust");
-    private Employee employee = new Employee("Empl", "Empl", "Empl", "Empl");
+    private Customer customer = new Customer("Customer", "Customer", "Customer", "Customer", "1150", "Austria", "Herklotzgasse", "10", "Vienna");
+    private Employee employee = new Employee("Employee", "Employee", "Employee", "Employee");
     private BankServer bankServer;
 
 

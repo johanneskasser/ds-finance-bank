@@ -31,11 +31,31 @@ public class CustomerEntity implements Serializable {
     @Column(name = "salt")
     private String salt;
 
+    @Column(name = "zip")
+    private String zip;
+
+    @Column(name = "country")
+    private String country;
+
+    @Column(name = "street")
+    private String street;
+
+    @Column(name = "number")
+    private String number;
+
+    @Column(name = "city")
+    private String city;
+
     public CustomerEntity(Customer customer){
         this.firstName = customer.getFirstName();
         this.userName = customer.getUserName();
         this.lastName = customer.getLastName();
         this.pwHash = customer.getPassword();
+        this.zip = customer.getZip();
+        this.country = customer.getCountry();
+        this.city = customer.getCity();
+        this.street = customer.getStreet();
+        this.number = customer.getNumber();
     }
 
     public CustomerEntity() {
@@ -88,5 +108,45 @@ public class CustomerEntity implements Serializable {
 
     public void setPwHash(String pwHash) {
         this.pwHash = pwHash;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 }
