@@ -2,6 +2,7 @@ package net.froihofer.dsfinance.bank.client.utils;
 
 import at.ac.csdc23vz_02.common.*;
 import at.ac.csdc23vz_02.common.exceptions.BankServerException;
+import net.froihofer.dsfinance.bank.client.BankClient;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,6 +14,8 @@ public class UserInterface {
     private final Scanner in = new Scanner(System.in);
     private UserType userType = UserType.CUSTOMER;
     private Person loggedInUser;
+
+    private BankClient bankClient;
 
 
     public UserInterface() {
@@ -27,7 +30,8 @@ public class UserInterface {
         return credentials;
     }
 
-    public void init(BankServer bankServer, List<String> credentials) throws BankServerException {
+    public void init(BankServer bankServer, List<String> credentials, BankClient bankClient1) throws BankServerException {
+        this.bankClient = bankClient1;
         this.bankServer = bankServer;
         if(login(credentials)) {
             showMainMenu();
@@ -120,7 +124,8 @@ public class UserInterface {
                     "Buy Share for Customer",
                     "Sell Share for Customer",
                     "Show Depot for Customer",
-                    "Show available Budget from Bank at the Stock Exchange"));
+                    "Show available Budget from Bank at the Stock Exchange",
+                    "Logout"));
             switch (output) {
                 case 1: startRegisterProcess(); break;
                 case 2: searchCustomer(); break;
@@ -129,6 +134,7 @@ public class UserInterface {
                 case 5: sellShareforCustomer(); break;
                 case 6: showDepotForCustomer(); break;
                 case 7: showAvailableBudget(); break;
+                case 8: logout(); break;
             }
         }
     }
@@ -263,6 +269,7 @@ public class UserInterface {
 
     private void logout() throws BankServerException {
         setModuleHeadline("Logout");
+        bankClient.run();
         showResponseMessage("Not implemented yet!", MessageType.ERROR);
         endOfModuleChoices();
     }

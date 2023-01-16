@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 public class BankClient {
   private static Logger log = LoggerFactory.getLogger(BankClient.class);
   private static BankServer bankServer;
+  UserInterface userInterface;
 
   /**
    * Skeleton method for performing an RMI lookup
@@ -44,14 +45,14 @@ public class BankClient {
     }
   }
 
-  private void run() throws BankServerException {
-    UserInterface userInterface = new UserInterface();
+  public void run() throws BankServerException {
+    userInterface = new UserInterface();
     List<String> credentials = userInterface.startLogin();
     while(!getRmiProxy(credentials.get(0), credentials.get(1))) {
       userInterface.showResponseMessage("Wrong Login Credentials!", MessageType.ERROR);
       credentials = userInterface.startLogin();
     }
-    userInterface.init(bankServer, credentials);
+    userInterface.init(bankServer, credentials, this);
   }
 
   public static void main(String[] args) throws BankServerException {
