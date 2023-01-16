@@ -83,6 +83,12 @@ public class TransactionEntity implements Serializable {
 
     }
 
+    /**
+     * Constructor for TransactionEntity
+     * @param stock stock contained in transaction
+     * @param customer customer for the customer
+     * @param shareCount Number of shares bought
+     */
     public TransactionEntity(Stock stock, Customer customer, int shareCount) {
         this.customerID = customer.getId();
         this.stockSymbol = stock.getSymbol();
