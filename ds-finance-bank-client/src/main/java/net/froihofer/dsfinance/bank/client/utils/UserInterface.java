@@ -363,8 +363,6 @@ public class UserInterface {
     private void logout() throws BankServerException {
         setModuleHeadline("Logout");
         bankClient.run();
-        showResponseMessage("Not implemented yet!", MessageType.ERROR);
-        endOfModuleChoices();
     }
     /**
      * used to manage personal data
