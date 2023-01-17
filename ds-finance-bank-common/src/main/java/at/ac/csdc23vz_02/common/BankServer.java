@@ -43,7 +43,7 @@ public interface BankServer {
      * Used to update an existing User
      * Implemented by the Bankserver
      */
-    boolean updateUser(Person person) throws BankServerException;
+    boolean updateUser(Person person, String confirmPassword) throws BankServerException;
 
     /**
      * Used to list an available Stock

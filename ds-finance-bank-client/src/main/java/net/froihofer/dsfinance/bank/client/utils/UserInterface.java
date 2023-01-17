@@ -324,7 +324,7 @@ public class UserInterface {
                 showResponseMessage("No User Found!", MessageType.ERROR);
             } else {
                 showResponseMessage("Customer found.", MessageType.SUCCESS);
-                Person person = new Person(customer.getFirstName(), customer.getLastName(), customer.getUserName(), customer.getPassword(), customer.getZip(), customer.getCountry(), customer.getStreet(), customer.getNumber(), customer.getCity());
+                Person person = new Person(customer.getUserName(), customer.getFirstName(), customer.getLastName(), customer.getPassword(), customer.getZip(), customer.getCountry(), customer.getStreet(), customer.getNumber(), customer.getCity());
                 person.setId(customer.getId());
                 showUserData(person);
                 showResponseMessage("Next possible actions", MessageType.INFO);
@@ -417,6 +417,7 @@ public class UserInterface {
      */
     private void resetPassword(Person person) throws BankServerException {
         showResponseMessage("Reset Password", MessageType.INFO);
+        String confirmPassword = showInputElement("Enter old Password");
         String newPwFirst = showInputElement("New password");
         String newPwSecond = showInputElement("Repeat new password");
 
@@ -428,7 +429,7 @@ public class UserInterface {
 
         person.setPassword(newPwSecond);
 
-        if(bankServer.updateUser(person)) {
+        if(bankServer.updateUser(person, confirmPassword)) {
             showResponseMessage("Successful Password reset!", MessageType.SUCCESS);
         }else {
             showResponseMessage("Failed Password reset - please try again", MessageType.ERROR);
@@ -456,8 +457,13 @@ public class UserInterface {
                 newFirstName = showInputElement("New first Name");
             }
             person.setFirstName(newFirstName);
-            bankServer.updateUser(person);
-            showResponseMessage("First Name changed.", MessageType.SUCCESS);
+            person.setPassword(showInputElement("Confirm with Password"));
+            String confirmPassword = person.getPassword();
+            if(bankServer.updateUser(person, confirmPassword)) {
+                showResponseMessage("First Name changed.", MessageType.SUCCESS);
+            } else {
+                showResponseMessage("Wrong Password!", MessageType.ERROR);
+            }
         } else if(output == 2) {
             //Update Last Name
             showResponseMessage("Change Last Name", MessageType.INFO);
@@ -467,8 +473,13 @@ public class UserInterface {
                 newLastName = showInputElement("New last Name");
             }
             person.setLastName(newLastName);
-            bankServer.updateUser(person);
-            showResponseMessage("Last Name changed.", MessageType.SUCCESS);
+            person.setPassword(showInputElement("Confirm with Password"));
+            String confirmPassword = person.getPassword();
+            if(bankServer.updateUser(person, confirmPassword)) {
+                showResponseMessage("Last Name changed.", MessageType.SUCCESS);
+            } else {
+                showResponseMessage("Wrong Password!", MessageType.ERROR);
+            }
         } else if(output == 3) {
             resetPassword(person);
         }

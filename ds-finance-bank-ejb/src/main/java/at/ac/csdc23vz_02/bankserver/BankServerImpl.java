@@ -476,9 +476,9 @@ public class BankServerImpl implements BankServer {
         } else if(!customerEntity.isEmpty() && employeeEntities.isEmpty()) {
             return new Person(
                     customerEntity.get(0).getID(),
+                    customerEntity.get(0).getUserName(),
                     customerEntity.get(0).getFirstName(),
                     customerEntity.get(0).getLastName(),
-                    customerEntity.get(0).getUserName(),
                     customerEntity.get(0).getPwHash(),
                     customerEntity.get(0).getZip(),
                     customerEntity.get(0).getCountry(),
@@ -503,27 +503,33 @@ public class BankServerImpl implements BankServer {
      *                                                  - User which is logged in could not be found in Database
      */
     @RolesAllowed({"employee", "customer"})
-    public boolean updateUser(Person person) throws BankServerException {
-        List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(person.getUserName());
-        List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(person.getUserName());
-        List<String> pwAndSalt = pwHash.createSaltAndHashPassword(person.getPassword());
-        String plainTextPassword = person.getPassword();
-        person.setPassword(pwAndSalt.get(1));
-        if(!employeeEntities.isEmpty() || !customerEntity.isEmpty()) {
-            try {
-                wildflyAuthDBHelper.changePassword(person.getUserName(), plainTextPassword);
-            } catch (IOException ioException) {
-                throw new BankServerException("Failed to change User Information in Wildfly Auth DB!" + ioException.getMessage(), BankServerExceptionType.WEBSERVER_FAULT);
+    public boolean updateUser(Person person, String confirmPassword) throws BankServerException {
+        if(!(login(Arrays.asList(person.getUserName(), confirmPassword)) == LoginType.LOGIN_FAILURE.getCode())) {
+            //User is correctly authenticated
+            List<CustomerEntity> customerEntity = customerEntityDAO.findByUsername(person.getUserName());
+            List<EmployeeEntity> employeeEntities = employeeEntityDAO.findByUsername(person.getUserName());
+            List<String> pwAndSalt = pwHash.createSaltAndHashPassword(person.getPassword());
+            String plainTextPassword = person.getPassword();
+            person.setPassword(pwAndSalt.get(1));
+            if(!employeeEntities.isEmpty() || !customerEntity.isEmpty()) {
+                try {
+                    wildflyAuthDBHelper.changePassword(person.getUserName(), plainTextPassword);
+                } catch (IOException ioException) {
+                    throw new BankServerException("Failed to change User Information in Wildfly Auth DB!" + ioException.getMessage(), BankServerExceptionType.WEBSERVER_FAULT);
+                }
             }
-        }
-        if(customerEntity.isEmpty() && !employeeEntities.isEmpty()) {
-            employeeEntityDAO.updateUserByUsername(person, pwAndSalt.get(0));
-        } else if(!customerEntity.isEmpty() && employeeEntities.isEmpty()) {
-            customerEntityDAO.updateUserByUsername(person, pwAndSalt.get(0));
+            if(customerEntity.isEmpty() && !employeeEntities.isEmpty()) {
+                employeeEntityDAO.updateUserByUsername(person, pwAndSalt.get(0));
+            } else if(!customerEntity.isEmpty() && employeeEntities.isEmpty()) {
+                customerEntityDAO.updateUserByUsername(person, pwAndSalt.get(0));
+            } else {
+                throw new BankServerException("User which is logged in could not be found in Database!", BankServerExceptionType.SESSION_FAULT);
+            }
+            return true;
         } else {
-            throw new BankServerException("User which is logged in could not be found in Database!", BankServerExceptionType.SESSION_FAULT);
+            return false;
         }
-        return true;
+
     }
 
     /**

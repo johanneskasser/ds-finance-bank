@@ -54,7 +54,7 @@ public class Customer extends Person implements Serializable {
      * @param city
      */
     public Customer(int ID, String firstName, String lastName, String userName, String zip, String country, String street, String number, String city) {
-        super(firstName, lastName, userName, null, zip, country, street, number, city);
+        super(userName, firstName, lastName, null, zip, country, street, number, city);
         super.setId(ID);
     }
 
@@ -72,7 +72,7 @@ public class Customer extends Person implements Serializable {
      * @param city
      */
     public Customer(int ID, String firstName, String lastName, String userName, String password, String zip, String country, String street, String number, String city) {
-        super(firstName, lastName, userName, password, zip, country, street, number, city);
+        super(userName, firstName, lastName, password, zip, country, street, number, city);
         super.setId(ID);
     }
 
